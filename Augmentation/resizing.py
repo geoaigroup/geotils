@@ -2,6 +2,7 @@ import torch
 from torch.nn.functional import interpolate,pad
 import numpy as np
 from math import ceil
+from cv2 import copyMakeBorder,BORDER_CONSTANT
 
 def remove_boundary_positives(img,pixels=20):
     H,W = img.shape[-2:]
@@ -85,3 +86,20 @@ def tta(data,i):
         x = torch.flip(data.clone(),dims=(-2,-1))
     
     return x
+
+def extend_mask(img,mask,pad_value=10,mask_img = False):
+  mh,mw = mask.shape
+  ih,iw,_ = img.shape
+  assert ih>=mh and iw>=mw, 'Mask resolution {} is bigger than Image resolution {}, Debug this!!'.format(mask.shape,img.shape[:2])
+  mask = copyMakeBorder(mask,
+                        top=0, 
+                        bottom = ih - mh, 
+                        left=0,
+                        right = iw - mw,
+                        borderType = BORDER_CONSTANT,
+                        value = pad_value)
+  if(mask_img):
+    img[mh:,...] = 0
+    img[:,mw:,:] = 0
+
+  return img,mask

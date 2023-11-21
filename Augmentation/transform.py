@@ -10,7 +10,7 @@ from torchvision.transforms import InterpolationMode
 import cv2
 from albumentations import PadIfNeeded,HorizontalFlip,Crop,CenterCrop,Compose,Resize,RandomCrop,VerticalFlip,OneOf
 import numpy as np
-
+from skimage.measure import label as label_fn
 
 
 class TorchRandomRotate(nn.Module):
@@ -39,8 +39,9 @@ class TorchRandomRotate(nn.Module):
     @torch.no_grad()
     def __call__(self,img,mask=None):
 
-        batch_size = img.shape[0]
-
+        # batch_size = img.shape[0]
+        batch_size=img.width
+        print(batch_size)
         for i in range(batch_size):
             
             if random.random() > self.proba:
@@ -141,9 +142,6 @@ class MaskPixelDrop(nn.Module):
             mask[i] = self.random_pixel_drop(mask[i],neg_mask[i],self.neg_drop)
         return mask
     
-
-
-
 
 def cnd(a,b):
     return a==b
@@ -285,10 +283,7 @@ ABOUT SCRIPT:
 It defines a sample Data Transformer for augmentation
 """
 
-import numpy as np
-import torch
-import random
-from skimage.measure import label as label_fn
+
 
 
 class EOTransformer():
@@ -377,23 +372,23 @@ class EOTransformer():
         image_stack = np.concatenate((image_stack,new_mask), axis = 1)
         return torch.from_numpy(np.ascontiguousarray(image_stack)).float(), torch.from_numpy(np.ascontiguousarray(mask)) #Edited By Ali image*mask
 
-class PlanetTransform(EOTransformer):
-    """
-    THIS CLASS INHERITS EOTRANSFORMER FOR DATA AUGMENTATION IN THE PLANET DATA
-    """
-    pass #TODO: some advanced approach special to Planet Data might be implemented
+# class PlanetTransform(EOTransformer):
+#     """
+#     THIS CLASS INHERITS EOTRANSFORMER FOR DATA AUGMENTATION IN THE PLANET DATA
+#     """
+#     pass #TODO: some advanced approach special to Planet Data might be implemented
 
-class Sentinel1Transform(EOTransformer):
-    """
-    THIS CLASS INHERITS EOTRANSFORMER FOR DATA AUGMENTATION IN THE SENTINEL-1 DATA
-    """
-    pass #TODO: some advanced approach special to Planet Data might be implemented
+# class Sentinel1Transform(EOTransformer):
+#     """
+#     THIS CLASS INHERITS EOTRANSFORMER FOR DATA AUGMENTATION IN THE SENTINEL-1 DATA
+#     """
+#     pass #TODO: some advanced approach special to Planet Data might be implemented
 
-class Sentinel2Transform(EOTransformer):
-    """
-    THIS CLASS INHERITS EOTRANSFORMER FOR DATA AUGMENTATION IN THE SENTINEL-2 DATA
-    """
-    pass #TODO: some advanced approach special to Planet Data might be implemented
+# class Sentinel2Transform(EOTransformer):
+#     """
+#     THIS CLASS INHERITS EOTRANSFORMER FOR DATA AUGMENTATION IN THE SENTINEL-2 DATA
+#     """
+#     pass #TODO: some advanced approach special to Planet Data might be implemented
 
 def random_crop(image_stack, mask, image_size):
     '''
@@ -421,7 +416,7 @@ def random_crop(image_stack, mask, image_size):
         mask = mask[h - int(np.floor(image_size // 2)):int(np.ceil(h + image_size // 2)),
             w - int(np.floor(image_size // 2)):int(np.ceil(w + image_size // 2))]
         if 1 in mask:
-            break;
+            break
     return image_stack, mask
 
 # def random_crop(img,mask,size = 32,min_area=0):
@@ -503,3 +498,5 @@ def crop_or_pad_to_size(image_stack,  mask, image_size):
         image_stack = np.pad(image_stack, ((0, 0), (0, 0), (0, 0), padding))
         mask = np.pad(mask, ((0, 0), padding))
     return image_stack, mask
+
+

@@ -11,6 +11,7 @@ from segmentation_models_pytorch.utils.losses import JaccardLoss,DiceLoss
 
 from segmentation_models_pytorch.losses import DiceLoss,SoftBCEWithLogitsLoss
 
+
 def _neg_loss(pred, gt):
   ''' Modified focal loss. Exactly the same as CornerNet.
       Runs faster and costs a little bit more memory
@@ -37,6 +38,14 @@ def _neg_loss(pred, gt):
   else:
     loss = loss - (pos_loss + neg_loss) / num_pos
   return loss
+
+
+
+
+
+
+
+
 
 def _soft_neg_loss(pred, gt,eps=0.2):
   ''' Modified focal loss to soft focal loss for noisy labels :)
@@ -66,6 +75,15 @@ def _soft_neg_loss(pred, gt,eps=0.2):
     loss = loss - (pos_loss + neg_loss) / num_pos
   return loss
 
+
+
+
+
+
+
+
+
+
 class KeypointFocalLoss(nn.Module):
   '''nn.Module warpper for focal loss'''
   __name__ = 'keypoint_focal_loss'
@@ -76,6 +94,12 @@ class KeypointFocalLoss(nn.Module):
   def forward(self, out, target):
     out = out.clamp_max(0.999).clamp_min(0.0001)
     return self.neg_loss(out, target)
+
+
+
+
+
+
 
 class SmoothKeypointFocalLoss(nn.Module):
   '''nn.Module warpper for smooth focal loss'''
@@ -140,6 +164,19 @@ class MaskedBCELoss(nn.Module):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 class ArgMax(nn.Module):
 
     def __init__(self, dim=None):
@@ -149,6 +186,19 @@ class ArgMax(nn.Module):
     def forward(self, x):
         return torch.argmax(x, dim=self.dim)
     
+
+
+
+
+
+
+
+
+
+
+
+
+
 class Activation(nn.Module):
 
     def __init__(self, name, **params):
@@ -177,6 +227,9 @@ class Activation(nn.Module):
     def forward(self, x):
         return self.activation(x)
     
+
+
+
 class FocalLoss(nn.Module):
     __name__='focal_loss'
     def __init__(self, alpha=1, gamma=2, logits=True, reduce=True):
@@ -199,6 +252,8 @@ class FocalLoss(nn.Module):
         else:
             return F_loss
 
+
+
 class BCELoss(nn.Module):
     __name__='bce_loss'
     def __init__(self,logits=True):
@@ -208,6 +263,8 @@ class BCELoss(nn.Module):
     def forward(self,y_pr,y_gt):
         bce = self.bce(y_pr,y_gt)
         return bce
+
+
 class CELoss(nn.Module):
     __name__='ce_loss'
     def __init__(self,weights=[1.,5.,5.,1.]):
@@ -217,6 +274,9 @@ class CELoss(nn.Module):
         ce = self.ce(y_pr,y_gt)
         return ce
     
+
+
+
 class DiceBCELoss(nn.Module):
     __name__='dice_bce_loss'
     def __init__(self,weights=[1.,1.],activation='sigmoid'):
@@ -227,6 +287,9 @@ class DiceBCELoss(nn.Module):
     def forward(self,y_pr,y_gt):
         return self.w2*self.bce(y_pr,y_gt) + self.w1*self.dice(y_pr, y_gt)
     
+
+
+
 class JaccardBCELoss(nn.Module):
     __name__='jaccard_bce_loss'
     def __init__(self,weights=[1.,1.],activation='sigmoid'):
@@ -237,6 +300,9 @@ class JaccardBCELoss(nn.Module):
     def forward(self,y_pr,y_gt):
         return self.w2*self.bce(y_pr,y_gt) + self.w1*self.jaccard(y_pr, y_gt)
     
+
+
+
 class DiceFocalLoss(nn.Module):
     __name__='dice_focal_loss'
     def __init__(self,weights=[1.,1.],activation='sigmoid'):
@@ -247,6 +313,8 @@ class DiceFocalLoss(nn.Module):
     def forward(self,y_pr,y_gt):
         return self.w2*self.focal(y_pr,y_gt) + self.w1*self.dice(y_pr, y_gt)
     
+
+
 class JaccardFocalLoss(nn.Module):
     __name__='jaccard_focal_loss'
     def __init__(self,weights=[1.,1.],activation='sigmoid'):
@@ -256,6 +324,9 @@ class JaccardFocalLoss(nn.Module):
         self.w1,self.w2=weights[0],weights[1]
     def forward(self,y_pr,y_gt):
         return self.w2*self.focal(y_pr,y_gt) + self.w1*self.jaccard(y_pr, y_gt)
+
+
+
 class DiceFocalBCELoss(nn.Module):
     __name__='dice_focal_bce_loss'
     def __init__(self,weights=[1.,1.,1.],activation='sigmoid'):
@@ -266,6 +337,9 @@ class DiceFocalBCELoss(nn.Module):
         self.w1,self.w2,self.w3=weights[0],weights[1],weights[2]
     def forward(self,y_pr,y_gt):
         return self.w1*self.dice(y_pr, y_gt) + self.w2*self.focal(y_pr, y_gt) + self.w3*self.bce(y_pr, y_gt)
+
+
+
 class JaccardFocalBCELoss(nn.Module):
     __name__='jaccard_focal_bce_loss'
     def __init__(self,weights=[1.,1.,1.],activation='sigmoid'):
@@ -276,6 +350,10 @@ class JaccardFocalBCELoss(nn.Module):
         self.w1,self.w2,self.w3=weights[0],weights[1],weights[2]
     def forward(self,y_pr,y_gt):
         return self.w1*self.jaccard(y_pr, y_gt) + self.w2*self.focal(y_pr, y_gt) + self.w3*self.bce(y_pr, y_gt)
+
+
+
+
 class MultiClass_loss(nn.Module) :
     __name__='multiclass_loss'
     def __init__(self,sloss='Dice',focal=False,entropy=1.,balance = [0.5,0.5],weights = [1.,5.,5.,1.],activation='sigmoid',normalize=True):
@@ -310,80 +388,46 @@ class MultiClass_loss(nn.Module) :
         return loss
         
     
+
+class CombinedLoss(nn.Module):
+    def __init__(self,name = 'dice+bce',
+                 weights = [0.5,0.5],
+                 activation = 'sigmoid',
+                 channel_weights = [1.,1.,1.],
+                 losses_per_channel = ['dice','bce','jaccard','focal'],
+                 normalize = True):
+        super().__init__() 
+        self.mapping = {
+            'dice' : DiceLoss(activation = None),
+            'jaccard': JaccardLoss(activation = None),
+            'bce'  : BCELoss(),
+            'focal' : FocalLoss()
+            }
+        self.weights = list( weights / np.sum(weights))
+        self.activation = Activation(activation)
+        self.need_activation = ['bce','focal']
+        self.names = name.split('+')
+        self.channel_losses = losses_per_channel
+        self.channel_weights = channel_weights
+        self.__name__ = f'{name.lower()}_loss'
+        self.norm = normalize
+        
+    def forward(self,y_pred,y_target):     
+        loss = 0
+        num_channels = y_target.size(1)  
+        act_y_pred = self.activation(y_pred)     
+        for w,name in enumerate(self.names):            
+            criterion = self.mapping[name]
+            pred_tensor = y_pred if(name in self.need_activation) else act_y_pred          
+            if(name in self.channel_losses):            
+                for i in range(num_channels):  
+                    loss += self.channel_weights[i] * self.weights[w] * criterion(pred_tensor[:,i,...],y_target[:,i,...])
+            else:
+                loss += self.weights[w] * criterion(pred_tensor,y_target)               
+        return loss / sum(self.channel_weights) if(self.norm) else loss
     
-def iou(pr, gt, eps=1e-7, threshold=0.5, activation='sigmoid'):
-    """
-    Source:
-        https://github.com/catalyst-team/catalyst/
-    Args:
-        pr (torch.Tensor): A list of predicted elements
-        gt (torch.Tensor):  A list of elements that are to be predicted
-        eps (float): epsilon to avoid zero division
-        threshold: threshold for outputs binarization
-    Returns:
-        float: IoU (Jaccard) score
-    """
+    
 
-    if activation is None or activation == "none":
-        activation_fn = lambda x: x
-    elif activation == "sigmoid":
-        activation_fn = torch.nn.Sigmoid()
-    elif activation == "softmax2d":
-        activation_fn = torch.nn.Softmax2d()
-    else:
-        raise NotImplementedError(
-            "Activation implemented for sigmoid and softmax2d"
-        )
-
-    pr = activation_fn(pr)
-
-    if threshold is not None:
-        pr = (pr > threshold).float()
-
-    intersection = torch.sum(gt * pr)
-    union = torch.sum(gt) + torch.sum(pr) - intersection + eps
-    return (intersection + eps) / union
-
-
-jaccard = iou
-
-
-def f_score(pr, gt, beta=1, eps=1e-7, threshold=0.5, activation='sigmoid'):
-    """
-    Args:
-        pr (torch.Tensor): A list of predicted elements
-        gt (torch.Tensor):  A list of elements that are to be predicted
-        beta (float): positive constant
-        eps (float): epsilon to avoid zero division
-        threshold: threshold for outputs binarization
-    Returns:
-        float: F score
-    """
-
-    if activation is None or activation == "none":
-        activation_fn = lambda x: x
-    elif activation == "sigmoid":
-        activation_fn = torch.nn.Sigmoid()
-    elif activation == "softmax2d":
-        activation_fn = torch.nn.Softmax2d()
-    else:
-        raise NotImplementedError(
-            "Activation implemented for sigmoid and softmax2d"
-        )
-
-    pr = activation_fn(pr)
-
-    if threshold is not None:
-        pr = (pr > threshold).type(pr.dtype)
-
-    tp = torch.sum(gt * pr)
-    fp = torch.sum(pr) - tp
-    fn = torch.sum(gt) - tp
-
-    score = ((1 + beta ** 2) * tp + eps) \
-            / ((1 + beta ** 2) * tp + beta ** 2 * fn + fp + eps)
-
-    return score
 class DiceLoss2(DiceLoss):
 
     def __init__(self, eps=1., beta=1., activation=None, ignore_channels=None, **kwargs):
