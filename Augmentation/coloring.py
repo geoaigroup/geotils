@@ -46,6 +46,7 @@ def colorize(washed):
     for i in range(3):
             mask[i][washed == 0] = np.uint8(255)
     return mask.transpose((1,2,0))
+
 def create_path(path):
     try:
         os.makedirs(path)
