@@ -176,26 +176,7 @@ class MaskedBCELoss(nn.Module):
 
 
 
-
-class ArgMax(nn.Module):
-
-    def __init__(self, dim=None):
-        super().__init__()
-        self.dim = dim
-
-    def forward(self, x):
-        return torch.argmax(x, dim=self.dim)
     
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -443,45 +424,45 @@ class DiceLoss2(DiceLoss):
             ignore_channels=self.ignore_channels,
         )
 
-def get_criterion(name='jaccard',activation='sigmoid',w=[1.,1.,1.]):
-    if(name=='dice'):
-        #from segmentation_models_pytorch.utils.losses import DiceLoss
-        return DiceLoss(activation=activation),1
-    elif(name=='focal'):
-        from Training.losses import FocalLoss
-        return FocalLoss(),1#activation=activation)
-    elif(name == 'jaccard'):
-        from segmentation_models_pytorch.utils.losses import JaccardLoss
-        return JaccardLoss(activation=activation),1
-    elif(name =='bce'):
-        from Training.losses import BCELoss
-        return BCELoss(),1#activation=activation)
-    elif(name=='blovasz'):
-        from Training.lovasz import BinaryLovaszLoss
-        return BinaryLovaszLoss(activation=activation),1
-    elif(name =='lovasz'):
-        from Training.lovasz import LovaszLoss
-        return LovaszLoss(activation=activation),1
-    elif(name == 'dice+bce'):
-        from Training.losses import DiceBCELoss
-        return DiceBCELoss(weights=w[:2]),w[0]+w[1]
-    elif(name == 'jaccard+bce'):
-        from Training.losses import JaccardBCELoss
-        return JaccardBCELoss(weights=w[:2]),w[0]+w[1]
-    elif(name =='dice+focal'):
-        from Training.losses import DiceFocalLoss
-        return DiceFocalLoss(weights=w[:2]),w[0]+w[1]
-    elif(name == 'jaccard+focal'):
-        from Training.losses import JaccardFocalLoss
-        return JaccardFocalLoss(weights=w[:2]),w[0]+w[1]
-    elif(name == 'jaccard+focal+bce'):
-        from Training.losses import JaccardFocalBCELoss
-        return JaccardFocalBCELoss(weights=w),w[0]+w[1]+w[2]
-    elif(name == 'dice+focal+bce'):
-        from Training.losses import DiceFocalBCELoss
-        return DiceFocalBCELoss(weights=w),w[0]+w[1]+w[2]
-    else:
-        raise NotImplementedError()
+# def get_criterion(name='jaccard',activation='sigmoid',w=[1.,1.,1.]):
+#     if(name=='dice'):
+#         #from segmentation_models_pytorch.utils.losses import DiceLoss
+#         return DiceLoss(activation=activation),1
+#     elif(name=='focal'):
+#         from Training.losses import FocalLoss
+#         return FocalLoss(),1#activation=activation)
+#     elif(name == 'jaccard'):
+#         from segmentation_models_pytorch.utils.losses import JaccardLoss
+#         return JaccardLoss(activation=activation),1
+#     elif(name =='bce'):
+#         from Training.losses import BCELoss
+#         return BCELoss(),1#activation=activation)
+#     elif(name=='blovasz'):
+#         from Training.lovasz import BinaryLovaszLoss
+#         return BinaryLovaszLoss(activation=activation),1
+#     elif(name =='lovasz'):
+#         from Training.lovasz import LovaszLoss
+#         return LovaszLoss(activation=activation),1
+#     elif(name == 'dice+bce'):
+#         from Training.losses import DiceBCELoss
+#         return DiceBCELoss(weights=w[:2]),w[0]+w[1]
+#     elif(name == 'jaccard+bce'):
+#         from Training.losses import JaccardBCELoss
+#         return JaccardBCELoss(weights=w[:2]),w[0]+w[1]
+#     elif(name =='dice+focal'):
+#         from Training.losses import DiceFocalLoss
+#         return DiceFocalLoss(weights=w[:2]),w[0]+w[1]
+#     elif(name == 'jaccard+focal'):
+#         from Training.losses import JaccardFocalLoss
+#         return JaccardFocalLoss(weights=w[:2]),w[0]+w[1]
+#     elif(name == 'jaccard+focal+bce'):
+#         from Training.losses import JaccardFocalBCELoss
+#         return JaccardFocalBCELoss(weights=w),w[0]+w[1]+w[2]
+#     elif(name == 'dice+focal+bce'):
+#         from Training.losses import DiceFocalBCELoss
+#         return DiceFocalBCELoss(weights=w),w[0]+w[1]+w[2]
+#     else:
+#         raise NotImplementedError()
         
 def mixup_data(x, y, alpha=1.0):
     if alpha > 0:
@@ -613,15 +594,6 @@ class Mixed_loss(nn.Module):
             self.overall_loss += multiplier * this_loss
         return self.overall_loss
 '''
-
-
-
-
-
-
-
-
-
 
 
 
