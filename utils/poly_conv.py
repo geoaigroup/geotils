@@ -31,31 +31,46 @@ def binary_mask_to_polygon(binary_mask):
 
     return polygon
 
-def convert_polygon_to_mask_batch(geo,shape):
-  gtmask=[]
-  for orig_row in geo:
-    polygon=[]
-    if orig_row.geom_type=="Polygon":
-        for point in orig_row.exterior.coords:
-          polygon.append(point)
-        img = Image.new('L', shape,0)
-        ImageDraw.Draw(img).polygon(polygon, outline=1, fill=1)
-        img=np.array(img)
-        gtmask.append(img)
+def convert_polygon_to_mask(geo,shape,transform=None):
+    gtmask=np.zeros(shape)
+    if transform:
+       for orig_row in geo:
+          polygon=[]
+          if orig_row.geom_type=="Polygon":
+              binary_array = geometry_mask([orig_row], out_shape=shape, transform=transform, invert=True)
+              ba=binary_array*1
+              gtmask=gtmask+ba
+          else:
+              for x in orig_row.geoms:
+                binary_array = geometry_mask([x], out_shape=shape, transform=transform, invert=True)
+                ba=binary_array*1
+                gtmask=gtmask+ba
     else:
-        for x in orig_row.geoms:
-          for point in x.exterior.coords:
-            polygon.append(point)
-        img = Image.new('L', shape,0)
-        ImageDraw.Draw(img).polygon(polygon, outline=1, fill=1)
-        img=np.array(img)
-        gtmask.append(img)
-  return gtmask
+      for orig_row in geo:
+            polygon=[]
+            if orig_row.geom_type=="Polygon":
+                for point in orig_row.exterior.coords:
+                    polygon.append(point)
+                img = Image.new('L', shape, 0)
+                ImageDraw.Draw(img).polygon(polygon, outline=1, fill=1)
+                gt_mask_building = np.array(img)
+                gtmask=gtmask+gt_mask_building
+            else:
+                for x in orig_row.geoms:
+                  for point in x.exterior.coords:
+                    polygon.append(point)
 
-def convert_polygon_to_mask_batch_transform(geo,shape,transform=None):
+                img = Image.new('L', shape, 0)
+                ImageDraw.Draw(img).polygon(polygon, outline=1, fill=1)
+                gt_mask_building = np.array(img)
+                gtmask=gtmask+gt_mask_building
+    return gtmask
+
+
+def convert_polygon_to_mask_batch(geo,shape,transform):
   gtmask=[]
   if transform:
-    for row in geo:
+     for row in geo:
       if row.geom_type=="Polygon":
         binary_array = geometry_mask([row], out_shape=shape, transform=transform, invert=True)
         ba=binary_array*1
@@ -66,7 +81,28 @@ def convert_polygon_to_mask_batch_transform(geo,shape,transform=None):
           binary_array = geometry_mask([x], out_shape=shape, transform=transform, invert=True)
           ba=binary_array*1
           gtmask.append(ba)
-    return gtmask
+  else:   
+    for orig_row in geo:
+      polygon=[]
+      if orig_row.geom_type=="Polygon":
+          for point in orig_row.exterior.coords:
+            polygon.append(point)
+          img = Image.new('L', shape,0)
+          ImageDraw.Draw(img).polygon(polygon, outline=1, fill=1)
+          img=np.array(img)
+          gtmask.append(img)
+      else:
+          for x in orig_row.geoms:
+            for point in x.exterior.coords:
+              polygon.append(point)
+          img = Image.new('L', shape,0)
+          ImageDraw.Draw(img).polygon(polygon, outline=1, fill=1)
+          img=np.array(img)
+          gtmask.append(img)
+  
+  return gtmask
+
+
 
 class ArgMax(nn.Module):
 
