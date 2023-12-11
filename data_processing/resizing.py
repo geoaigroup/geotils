@@ -74,32 +74,3 @@ def unpad_resize(x,padsize=None,resize=None):
         x = interpolate(x,size=(256,256),mode='bilinear')
 
     return x
-
-def tta(data,i):
-    if i == 0:
-        x = data
-    elif i == 1:
-        x = torch.flip(data.clone(),dims=(-1,))
-    elif i == 2:
-        x = torch.flip(data.clone(),dims=(-2,))
-    elif i == 3:
-        x = torch.flip(data.clone(),dims=(-2,-1))
-    
-    return x
-
-def extend_mask(img,mask,pad_value=10,mask_img = False):
-  mh,mw = mask.shape
-  ih,iw,_ = img.shape
-  assert ih>=mh and iw>=mw, 'Mask resolution {} is bigger than Image resolution {}, Debug this!!'.format(mask.shape,img.shape[:2])
-  mask = copyMakeBorder(mask,
-                        top=0, 
-                        bottom = ih - mh, 
-                        left=0,
-                        right = iw - mw,
-                        borderType = BORDER_CONSTANT,
-                        value = pad_value)
-  if(mask_img):
-    img[mh:,...] = 0
-    img[:,mw:,:] = 0
-
-  return img,mask
