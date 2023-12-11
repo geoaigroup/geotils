@@ -102,7 +102,3 @@ def mask_to_polys(iid,mask,mina = 4):
     return gdf
     
         
-        
-        
-    
-    
