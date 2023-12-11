@@ -83,41 +83,6 @@ def noise_filter(washed,mina):
             washed[washed == val] = 0
     return washed
     
-def post_process(pred,thresh = 0.5,thresh_b = 0.6,mina=100,mina_b=50):
-    if len(pred.shape) < 2:
-        return None
-    if len(pred.shape) == 2:
-        pred = pred[...,np.newaxis]
-    
-    ch = pred.shape[2]
-    buildings = pred[...,0]
-    if ch > 1:
-        borders = pred[...,1]
-        nuclei = buildings * (1.0 - borders)
-
-        if ch == 3:
-            spacing = pred[...,2]
-            nuclei *= (1.0 - spacing)
-
-        basins = label(nuclei>thresh_b,background = 0, connectivity = 2)
-        if mina_b > 0:
-            basins = noise_filter(basins, mina = mina_b)
-            basins = label(basins,background = 0, connectivity = 2)
-
-        washed = watershed(image = -buildings,
-                           markers = basins,
-                           mask = buildings>thresh,
-                           watershed_line=False)
-
-    elif(ch == 1):
-        washed  = buildings > thresh 
-
-
-    washed = label(washed,background = 0, connectivity = 2)
-    washed = noise_filter(washed, mina=mina)
-    washed = label(washed,background = 0, connectivity = 2)
-        
-    return washed
 
 #visualization utils
 def mask2rgb(mask,max_value=1.0):
