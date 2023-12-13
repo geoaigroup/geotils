@@ -5,14 +5,14 @@ from torch.nn.functional import interpolate
 import os
 import cv2
 import random
-
+import glob
 import numpy as np
 
 from math import ceil
 from skimage.segmentation import watershed
 from skimage.measure import label
-
-
+import geopandas as gpd
+from poly_conv import binary_mask_to_polygon
 def make_dir(path):
     os.makedirs(path,exist_ok=True)
 
@@ -173,3 +173,49 @@ def overlay_instances_mask(img,instances,cmap,alpha=0.9):
     overlay = (overlay * 255.0).astype(np.uint8)
     viz = overlay_rgb_mask(img,overlay,instances>0,alpha=alpha)
     return viz
+
+def save_shp(pred_mask,name,output_dir,image_shape):
+    pred_tile = []
+    mask_tile = np.zeros(image_shape)
+    msk = pred_mask.int()
+    msk = msk.cpu().numpy()
+    for i in range(msk.shape[0]):
+        batch = msk[i]
+        for b in range(batch.shape[0]):
+            mask_tile = mask_tile + batch[b]
+            pred_tile.append(batch[b])
+
+    polys=[]
+    for k in pred_tile:
+        if not np.any(k):
+            continue
+        polys.append(binary_mask_to_polygon(k))
+
+    gdf = gpd.GeoDataFrame({
+                        'ImageId':name,
+                        'geometry':polys
+                        })
+    gdf.to_file(f"{output_dir}/{name}/{name}.shp")
+
+
+
+def extract_rep_points(data,new_data):
+    os.makedirs(f"{new_data}",exist_ok=True)
+    for i in os.listdir(data):
+        for j in os.listdir(f'{data}/{i}'):
+            sh=j.split('.')[0]
+            if glob.glob(new_data+"/"+sh):
+                continue
+            # GeoDataFrame creation
+            poly = gpd.read_file(f"{data}/{i}/{sh}.shp")
+            # copy poly to new GeoDataFrame
+            points = poly.copy()
+            # change the geometry
+            #points.geometry = points['geometry'].centroid
+            points.geometry = points['geometry'].representative_point()
+
+            # same crs
+            points.crs =poly.crs
+            
+            os.makedirs(f"{new_data}/{sh}",exist_ok=True)
+            points.to_file(f'{new_data}/{sh}/{sh}.shp')    

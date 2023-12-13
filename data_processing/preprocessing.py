@@ -29,7 +29,7 @@ import torch
 import gc
 import cv2
 from shapely.geometry import shape
-from utils import poly_conv,utils
+from utililities import poly_conv,utils
 # from old_utils import * 
 import sys
 # Define some constants
@@ -163,7 +163,7 @@ class loading_large_tile:
                 #     mask = rio.open(glob.glob(f'{self.mask_directory}/{name}{self.mask_suffix}'))
                 #     mask = mask.read()[0]#.transpose(1,2,0)
                 # else:
-                #     print("provide .tiff or .shp mask file")
+                #     print("provide .tiff or .shp mask file")  
                 #     return
                 
                 mask = rio.open(glob.glob(f'{self.mask_directory}/{name}{self.mask_suffix}'))

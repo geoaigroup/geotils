@@ -18,7 +18,7 @@ from cv2 import fillPoly,copyMakeBorder
 import cv2
 from math import ceil
 from shapely.geometry import Polygon
-from utils import colorize
+from utililities import colorize
 from PIL import Image
 class masker():
     def __init__(self,

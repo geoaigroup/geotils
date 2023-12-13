@@ -20,7 +20,7 @@ import cv2
 from PIL import Image
 import matplotlib.pyplot as plt
 from PIL import Image, ImageDraw
-from utils.poly_conv import convert_polygon_to_mask_batch
+from utililities.poly_conv import convert_polygon_to_mask_batch
 from data_processing.preprocessing import loading_large_tile
 width=512
 height=512
