@@ -9,7 +9,6 @@ from skimage.morphology import erosion, square, binary_erosion
 from skimage.io import imread,imsave
 from utils import colorize,create_path
 from tqdm import tqdm
-
 import rasterio as rs
 from cv2 import fillPoly,copyMakeBorder
 from math import ceil
@@ -28,12 +27,10 @@ class Masker():
         assert self.x_off >= 0 and self.y_off >= 0, f'out size {self.sz} should be less than padded size {self.pd_sz}'
         assert erosion_kernel.lower() in ['square','cross'], f'erosion kernel type : [ {erosion_kernel} ] is not valid'
         self.ek_type = erosion_kernel.lower()
-        self.itr_vrbs = iterator_verbose ###
-
+        self.itr_vrbs = iterator_verbose 
         self.data = data
         self.ids = sorted(os.listdir(self.data))
         self.ldir = 'labels_match_pix'
-
    
     def load_labels(self,json_path):
         jfile=open(json_path,'r')
@@ -51,9 +48,6 @@ class Masker():
                              [1,1,1],
                              [0,1,0]],dtype=np.uint8)
     
-
-
-
     def load_raster_file(self,raster_path):
         return rs.open(raster_path)
     
@@ -148,9 +142,6 @@ class Masker():
                                      borderType =cv2.BORDER_CONSTANT,
                                      value = 0)
             return img,ins,b,br
-
-
-
 
     def _collect(self,labels):
         _meta = {}
@@ -261,17 +252,3 @@ class Masker():
                 np.save(f'{img_save}/buildings.npy',ins_mask)
                 np.save(f'{img_save}/borders.npy',ins_borders)
                 
-    
-# class masker():
-#     def __init__(self,data,
-#                  out_size = (1024,1024),
-#                  erosion_kernel ='cross',
-#                  verbose = True):
-#         self.data = data
-#         self.sz = out_size
-#         self.ids = sorted(os.listdir(self.data))
-#         self.ldir = 'labels_match_pix'
-#         assert erosion_kernel in ['cross','square']
-#         self.ek_type = erosion_kernel
-#         itr_vrbs = verbose
-        
