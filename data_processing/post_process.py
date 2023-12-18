@@ -11,72 +11,56 @@ import numpy as np
 from skimage.morphology import watershed,dilation,square,erosion
 from skimage.measure import label
 from PIL import Image,ImageDraw
-from Augmentation.coloring import colorize
 from rasterio.features import shapes
 import pandas as pd
 from shapely.geometry import shape
 from shapely.wkt import dumps
 from shapely.ops import cascaded_union
 import geopandas as gpd
-def post_process(raw,thresh = 0.5,mina=40,save=None):
+
+def post_process(pred,thresh = 0.5,thresh_b = 0.6,mina=100,mina_b=50):
+    if len(pred.shape) < 2:
+        return None
+    if len(pred.shape) == 2:
+        pred = pred[...,np.newaxis]
     
-    try:
-        ch = raw.shape[2]
-    except:
-        ch=1
-    if(ch == 2):
-        rraw = ranger(raw)
-        
-        rbuilds = raw[...,0]
-        rborders = raw[...,1]
-        
-        nuclei = rbuilds * (1 - rborders)
-        
-        builds = raw[...,0]
-        
-        basins = label(nuclei>0.1,background = 0, connectivity = 2)
-        #Image.fromarray(basins>0).show()
-        #basins = noise_filter(basins, mina = 2 )
-        basins = label(basins,background = 0, connectivity = 2)
-        washed = watershed(image = -builds,
+    ch = pred.shape[2]
+    buildings = pred[...,0]
+    if ch > 1:
+        borders = pred[...,1]
+        nuclei = buildings * (1.0 - borders)
+
+        if ch == 3:
+            spacing = pred[...,2]
+            nuclei *= (1.0 - spacing)
+
+        basins = label(nuclei>thresh_b,background = 0, connectivity = 2)
+        if mina_b > 0:
+            basins = noise_filter(basins, mina = mina_b)
+            basins = label(basins,background = 0, connectivity = 2)
+
+        washed = watershed(image = -buildings,
                            markers = basins,
-                           mask = builds>thresh,
+                           mask = buildings>thresh,
                            watershed_line=False)
-        washed = label(washed,background = 0, connectivity = 2)
-        washed = noise_filter(washed, mina=thresh)
-        washed = label(washed,background = 0, connectivity = 2)
-        #col = colorize(washed)
-        #Image.fromarray(col).show()
-        
+
     elif(ch == 1):
-        builds = raw[...,0]
-        washed  = label(builds > thresh,background = 0, connectivity = 2)
-        washed = noise_filter(washed, mina=thresh)
-        washed = label(washed,background = 0, connectivity = 2)
-        #col = colorize(washed)
-        #Image.fromarray(col).show()
-        
-    else:
-        raise NotImplementedError(
-            )
+        washed  = buildings > thresh 
+
+
+    washed = label(washed,background = 0, connectivity = 2)
+    washed = noise_filter(washed, mina=mina)
+    washed = label(washed,background = 0, connectivity = 2)
         
     return washed
 
 def noise_filter(washed,mina):
     values = np.unique(washed)
-    #a =0
-    #print(values)
     for val in values[1:]:
-        #a+=1
         area = (washed[washed == val]>0).sum()
         if(area<=mina):  
             washed[washed == val] = 0
-    #print(a)
     return washed
-
-def ranger(x):
-    x1 = x.copy()
-    return np.tanh((x1 - 0.5)/0.1) * (0.5)+0.5
 
 def extract_poly(mask):
     shps = shapes(mask.astype(np.int16),mask>0)
@@ -117,7 +101,3 @@ def mask_to_polys(iid,mask,mina = 4):
     return gdf
     
         
-        
-        
-    
-    
