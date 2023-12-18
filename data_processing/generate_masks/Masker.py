@@ -9,6 +9,7 @@ from skimage.morphology import erosion, square, binary_erosion
 from skimage.io import imread,imsave
 from utils import colorize,create_path
 from tqdm import tqdm
+
 import rasterio as rs
 from cv2 import fillPoly,copyMakeBorder
 from math import ceil
@@ -16,7 +17,6 @@ from math import ceil
 
 class Masker():
     def __init__(self,
-                 data,
                  out_size = (1024,1024),
                  erosion_kernel ='cross',
                  iterator_verbose = True):
@@ -27,10 +27,9 @@ class Masker():
         assert self.x_off >= 0 and self.y_off >= 0, f'out size {self.sz} should be less than padded size {self.pd_sz}'
         assert erosion_kernel.lower() in ['square','cross'], f'erosion kernel type : [ {erosion_kernel} ] is not valid'
         self.ek_type = erosion_kernel.lower()
-        self.itr_vrbs = iterator_verbose 
-        self.data = data
-        self.ids = sorted(os.listdir(self.data))
+        self.itr_vrbs = iterator_verbose
         self.ldir = 'labels_match_pix'
+
    
     def load_labels(self,json_path):
         jfile=open(json_path,'r')
@@ -48,6 +47,9 @@ class Masker():
                              [1,1,1],
                              [0,1,0]],dtype=np.uint8)
     
+
+
+
     def load_raster_file(self,raster_path):
         return rs.open(raster_path)
     
@@ -143,6 +145,9 @@ class Masker():
                                      value = 0)
             return img,ins,b,br
 
+
+
+
     def _collect(self,labels):
         _meta = {}
         for label in labels['features']:
@@ -220,15 +225,15 @@ class Masker():
     def to_gray(self,mask):
         return (mask>0).astype(np.uint8) * 255
     
-    def generate_dataset(self,save_path):
+    def generate_dataset(self,save_path, data):
         create_path(save_path)
-        
-        for iid in self.ids[42:]:
+        ids = sorted(os.listdir(data))
+        for iid in ids[42:]:
             imgs_save = f'{save_path}/{iid}'
             imgs_path = f'{self.data}/{iid}/images_masked'
             labels_path = f'{self.data}/{iid}/{self.ldir}'
             lod = os.listdir(imgs_path)
-            loader = tqdm(lod) if(itr_vrbs) else lod
+            loader = tqdm(lod) if(self.itr_vrbs) else lod
             loader.set_description(f'{iid}')
             create_path(imgs_save)
             for exten in loader:
@@ -252,3 +257,4 @@ class Masker():
                 np.save(f'{img_save}/buildings.npy',ins_mask)
                 np.save(f'{img_save}/borders.npy',ins_borders)
                 
+    
