@@ -50,9 +50,8 @@ class TorchRandomRotate(nn.Module):
     @torch.no_grad()
     def __call__(self,img,mask=None):
 
-        # batch_size = img.shape[0]
-        batch_size=img.width
-        print(batch_size)
+        batch_size = img.shape[0]
+
         for i in range(batch_size):
             
             if random.random() > self.proba:
