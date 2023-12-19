@@ -83,25 +83,6 @@ def extract_poly(mask):
         #break
     
 
-def mask_to_polys(iid,mask,mina = 4):
-    vals = sorted(np.unique(mask))
-    polys = []
-    areas = []
-    for i in vals[1:]:
-        poly = extract_poly(mask == i)
-        
-        if(poly is not None):
-            if(poly.area > mina):
-                polys.append(poly)
-                areas.append(poly.area)
-    gdf = gpd.GeoDataFrame(
-                            {'Id' : list(range(1,len(polys)+1)),
-                            'geometry'    : polys,
-                             'area'       : areas
-                                })
-    return gdf
-    
-
 def instance_mask_to_gdf(
         instance_mask,
         transform = None,
