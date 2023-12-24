@@ -13,6 +13,20 @@ import numpy as np
 from skimage.measure import label as label_fn
 
 def test_time_augmentation(data,i):
+    """
+    Apply test-time augmentation to input data.
+
+    Args:
+    - data (torch.Tensor): Input data with shape (channels, height, width).
+    - i (int): Index specifying the augmentation type:
+        - 0: No flip
+        - 1: Flip along the last dimension
+        - 2: Flip along the second-to-last dimension
+        - 3: Flip along both dimensions
+
+    Returns:
+    - torch.Tensor: Augmented data.
+    """
     if i == 0:
         x = data
     elif i == 1:
