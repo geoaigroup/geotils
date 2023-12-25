@@ -14,9 +14,9 @@ from segmentation_models_pytorch.base import modules as md
 from segmentation_models_pytorch.decoders.unet.decoder import DecoderBlock,CenterBlock
 from segmentation_models_pytorch.encoders import get_encoder
 from segmentation_models_pytorch.base import SegmentationModel,SegmentationHead, ClassificationHead
-from .ASPP import ASPP,DenseASPP
+from ..models.ASPP import ASPP,DenseASPP
 from .RA_modules import Relational_Module
-from .OCR import OCR
+from ..models.OCR import OCR
 #from torchviz import make_dot
 #8import matplotlib.pyplot as plt
 global mod_map,mod_types

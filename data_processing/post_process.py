@@ -11,7 +11,6 @@ import numpy as np
 from skimage.morphology import watershed,dilation,square,erosion
 from skimage.measure import label
 from PIL import Image,ImageDraw
-from Augmentation.coloring import colorize
 from rasterio.features import shapes
 import pandas as pd
 from shapely.geometry import shape

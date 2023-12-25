@@ -23,42 +23,6 @@ import fiona
 width=512
 height=512
 
-def show_mask(mask,ax,random_color=False,s=""):
-        if random_color:
-            color = np.concatenate([np.random.random(3), np.array([0.6])], axis=0)
-        else:
-            if s=="gt":
-                color = np.array([30/255, 144/255, 255/255, 0.5])
-            elif s=="whu":
-               color = np.array([0/255, 255/255, 0/255, 0.4])
-            elif s=="pred":
-                color = np.array([255/255, 0/255, 0/255, 0.5])
-            else:
-                color = np.array([30/255, 144/255, 255/255, 0.6])
-            h, w = mask.shape[-2:]
-            mask_image = mask.reshape(h, w, 1) * color.reshape(1, 1, -1)
-            ax.imshow(mask_image)
-            #return mask_image
-
-def show_mask_box(mask, ax, random_color=False):
-    if random_color:
-        color = np.concatenate([np.random.random(3), np.array([0.6])], axis=0)
-    else:
-       color = np.array([30/255, 144/255, 255/255, 0.6])
-       h, w = mask.shape[-2:]
-       mask_image = mask.reshape(h, w, 1) * color.reshape(1, 1, -1)
-       ax.imshow(mask_image)
-def show_points(coords, labels, ax, marker_size=375):
-    pos_points = coords[labels==1]
-    neg_points = coords[labels==0]
-    ax.scatter(pos_points[:, 0], pos_points[:, 1], color='green', marker='*', s=marker_size, edgecolor='white', linewidth=1.25)
-    ax.scatter(neg_points[:, 0], neg_points[:, 1], color='red', marker='*', s=marker_size, edgecolor='white', linewidth=1.25)
-def show_box(box, ax):
-    x0, y0 = box[0], box[1]
-    w, h = box[2] - box[0], box[3] - box[1]
-    ax.add_patch(plt.Rectangle((x0, y0), w, h, edgecolor='green', facecolor=(0,0,0,0), lw=2))
-
-
 
 def create_boxes(geo):
     tile_boxes=[]
@@ -275,46 +239,5 @@ def create_list_points(geo,name,flag=""):
                 return all_points,all_labels
 
 
-def extract_rep_points(data,new_data):
-    os.makedirs(f"{new_data}",exist_ok=True)
-    for i in os.listdir(data):
-        for j in os.listdir(f'{data}/{i}'):
-            sh=j.split('.')[0]
-            if glob.glob(new_data+"/"+sh):
-                continue
-            # GeoDataFrame creation
-            poly = gpd.read_file(f"{data}/{i}/{sh}.shp")
-            # copy poly to new GeoDataFrame
-            points = poly.copy()
-            # change the geometry
-            #points.geometry = points['geometry'].centroid
-            points.geometry = points['geometry'].representative_point()
 
-            # same crs
-            points.crs =poly.crs
-            
-            os.makedirs(f"{new_data}/{sh}",exist_ok=True)
-            points.to_file(f'{new_data}/{sh}/{sh}.shp')    
 
-def save_shp(pred_mask,name,output_dir,image_shape):
-    pred_tile = []
-    mask_tile = np.zeros(image_shape)
-    msk = pred_mask.int()
-    msk = msk.cpu().numpy()
-    for i in range(msk.shape[0]):
-        batch = msk[i]
-        for b in range(batch.shape[0]):
-            mask_tile = mask_tile + batch[b]
-            pred_tile.append(batch[b])
-
-    polys=[]
-    for k in pred_tile:
-        if not np.any(k):
-            continue
-        polys.append(binary_mask_to_polygon(k))
-
-    gdf = gpd.GeoDataFrame({
-                        'ImageId':name,
-                        'geometry':polys
-                        })
-    gdf.to_file(f"{output_dir}/{name}/{name}.shp")
