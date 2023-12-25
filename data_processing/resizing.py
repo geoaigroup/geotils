@@ -4,7 +4,10 @@ import numpy as np
 from math import ceil
 from cv2 import copyMakeBorder,BORDER_CONSTANT
 
-def remove_boundary_positives(img,pixels=20):
+
+def remove_boundary_positives(img: torch.Tensor, pixels: int = 20) -> torch.Tensor:
+    """Remove boundary pixels from input image tensor."""
+
     H,W = img.shape[-2:]
     bg = torch.zeros_like(img,dtype=img.dtype,device=img.device)
 
@@ -16,7 +19,10 @@ def remove_boundary_positives(img,pixels=20):
     bg[...,s1:e1,s2:e2] = img[...,s1:e1,s2:e2]
     return bg
 
-def remove_boundary_positives_np(img,pixels=20):
+
+def remove_boundary_positives_np(img: np.ndarray, pixels: int = 20) -> np.ndarray:
+    """Remove boundary pixels from input image numpy array."""
+
     H,W = img.shape[:2]
     bg = np.zeros_like(img,dtype=img.dtype)
 
@@ -27,8 +33,10 @@ def remove_boundary_positives_np(img,pixels=20):
     bg[s1:e1,s2:e2,...] = img[s1:e1,s2:e2,...]
     return bg
 
-def resize_pad(x,padsize=None,resize=None,pad_value = -1):
-  
+
+def resize_pad(x: torch.Tensor, padsize: [int] = None, resize: [int] = None, pad_value: int = -1) -> torch.Tensor:
+    """Resize and/or pad input tensor."""
+
     if padsize is None and resize is None:
         return x
     
@@ -56,7 +64,10 @@ def resize_pad(x,padsize=None,resize=None,pad_value = -1):
     
     return x
 
-def unpad_resize(x,padsize=None,resize=None):
+
+def unpad_resize(x: torch.Tensor, padsize: [int] = None, resize: [int] = None) -> torch.Tensor:
+    """Unpad and/or resize input tensor."""
+
     if padsize is None and resize is None:
         return x
     if padsize is not None:
