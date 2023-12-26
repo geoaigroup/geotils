@@ -6,7 +6,7 @@ from schedulers import AutoScheduler,scheduler_mapping,get_scheduler
 import numpy as np
 
 
-class test_optimizers(unittest.TestCase):
+class testScheduler(unittest.TestCase):
     def test_keys_lower_case(self):
         for schechduler in scheduler_mapping:
             self.assertEqual(schechduler,schechduler.lower())
