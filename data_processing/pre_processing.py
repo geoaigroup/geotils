@@ -5,21 +5,6 @@ import numpy as np
 import os
 from time import time
 
-# ML libraries
-# import tensorflow as tf
-# import keras
-# from keras.layers.core import *
-# from keras.models import Sequential, Model, load_model
-# from keras.layers import Dense
-# from keras.layers import concatenate
-# from keras.layers import Input
-# from keras.layers import LSTM
-# from keras.layers import Dropout
-# from keras.layers import Conv1D, Conv2D
-# from keras.layers import MaxPool2D
-# from keras.layers import Dropout
-# from keras.utils import to_categorical
-# from keras.optimizers import Adam
 from sklearn import metrics
 
 import glob
@@ -43,14 +28,33 @@ np.random.seed(42)
 
 
 class LargeTiffLoader:
+    """
+    The primary purpose of this class is to load and present a sizable Tiff image as a 
+    collection of smaller, consistently sized images. The `pre_load` method is specifically 
+    designed to carry out this operation. Additionally, the `load_index` function facilitates
+    the creation and batching of images from a larger image by specifying the pixel positions to be cropped.
+    """
    
     def __init__(self,image_directory,image_suffix='.tif'):
+        """
+        @param image_directory = path of directory containing images to be loaded
+        @param image_suffix = type of images entered, default='.tif'
+        """
+        
         self.image_directory=image_directory
         self.image_suffix=image_suffix
 
 
         
     def load_index(self,save_path,col_off, row_off, width, height):
+
+        """
+        @param save_path = path of the directory to save cropped image
+        @param col_off = indicates the starting column position from which the batch image should begin.
+        @param row_off = specifies the starting row position from which the batch image should start.
+        @param width = width of the batch image
+        @param height = height of the batch image
+        """
         for file in os.listdir(self.image_directory):
              if file.endswith(self.image_suffix):
                 name = file.split('.')[0]
@@ -59,27 +63,20 @@ class LargeTiffLoader:
                     window = Window(col_off, row_off, width, height)
                     # fragment = src.read(1, window=window)
                     
-                    # Lookup table for the color space in the source file
                     source_colorinterp = dict(zip(src.colorinterp, src.indexes))
 
-                    # Read the image in the proper order so the numpy array will have the colors in the
-                    # order expected by matplotlib (RGB)
                     rgb_indexes = [
                         source_colorinterp[ci]
                         for ci in (ColorInterp.red, ColorInterp.green, ColorInterp.blue)
                     ]
                     data = src.read(rgb_indexes, window=window)
 
-                    # Also pass in the affine transform corresponding to the window in order to
-                    # display the correct coordinates and possibly orientation
                     show(data, transform=src.window_transform(window))
-                    #Save the fragment as a new georeferenced image
                    
                     fragment_profile = original_profile.copy()
                     fragment_profile['width'] = data.shape[1]
                     fragment_profile['height'] = data.shape[2]
              
-                    # Update the transformation to match the fragment's position
                     fragment_profile['transform'] = src.window_transform(window)
                  
                 
@@ -89,7 +86,21 @@ class LargeTiffLoader:
 
 
 
-    def pre_load(self,mask_directory,mask_suffix='.tif', fragment_size=1024, PATCH_SIZE=1024, STRIDE_SIZE=512, CROP_SIZE =768, DOWN_SAMPLING=1,transform=None):
+    def pre_load(self,mask_directory,mask_suffix='.tif', fragment_size=1024, PATCH_SIZE=1024, STRIDE_SIZE=512, DOWN_SAMPLING=1,transform=None):
+        """
+        @param mask_directory = path of directory contains masks
+        @param mask_suffix = type of mask file, default='.tif'
+        @param fragment_size = size of the copped batch image
+        @param PATCH_SIZE = patch size 
+        @param STRIDE_SIZE = stride size 
+        @param DOWN_SAMPLING = downsampling factor
+        @param transform = tansformation information of the images or the masks
+
+        Return:
+        loaded_images = list of loaded images as numpy array each
+        loaded_masks = list of loaded masks as numpy array each
+        """
+        
         loaded_images=[]
         loaded_masks=[]
         for file in os.listdir(self.image_directory):
@@ -149,14 +160,12 @@ class LargeTiffLoader:
                         patch_mask = full_mask[hs:he,ws:we]
                       
                         shapes = rasterio.features.shapes(patch_mask)
-                        # read the shapes as separate lists
                         geometry = []
                         for shapedict, value in shapes:
                             if value == 0:
                                 continue
                             geometry.append(shape(shapedict))
 
-                        # build the gdf object over the two lists
                         patch_gdf = gpd.GeoDataFrame({'geometry': geometry})
                        
                         if len(patch_gdf) == 0:
