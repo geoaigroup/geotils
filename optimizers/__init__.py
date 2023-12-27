@@ -29,7 +29,7 @@ optimizer_mapping = {
 
 }
 
-def get_optimizer(name:str ,params,*args,**kwargs) -> Optimizer:
+def get_optimizer(name:str ,params,lookAhead=False,lookAhead_alpha=0.5, lookAhead_k=6,lookAhead_pullback_momentum="none",*args,**kwargs) -> Optimizer:
     """
     This function returns the optimizer given its name
 
@@ -46,4 +46,8 @@ def get_optimizer(name:str ,params,*args,**kwargs) -> Optimizer:
     name = name.lower()
     if name not in optimizer_mapping.keys():
         raise ValueError('Optimizer {} not an option'.format(name))
+
+    if lookAhead:
+        assert name != 'adan', "lookahead adan is not supported"
+        return Lookahead(optimizer_mapping[name](params,*args,**kwargs),alpha=lookAhead_alpha, k=lookAhead_k,pullback_momentum=lookAhead_pullback_momentum)
     return optimizer_mapping[name](params,*args,**kwargs)
