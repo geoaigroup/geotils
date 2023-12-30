@@ -3,7 +3,8 @@ import pandas as pd
 import geopandas as gpd
 import rasterio as rio
 from rasterio.features import shapes
-from skimage.morphology import watershed,dilation,square,erosion
+from skimage.morphology import dilation,square,erosion
+from skimage.segmentation import watershed
 from skimage.measure import label
 from PIL import Image,ImageDraw
 from shapely.geometry import shape
