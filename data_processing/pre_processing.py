@@ -6,7 +6,7 @@ import os
 from time import time
 
 from sklearn import metrics
-
+from pathlib import Path
 import glob
 import tqdm
 import geopandas as gpd
@@ -14,12 +14,15 @@ import torch
 import gc
 import cv2
 from shapely.geometry import shape
-# from ..ToBeChecked.utils import utils
+
+
+from utility.utils import ratio_resize_pad
 import rasterio
+from rasterio.features import shapes as rio_shapes
 from rasterio.enums import ColorInterp
 from rasterio.plot import show
 from rasterio.windows import Window
-import sys
+
 # Define some constants
 
 
@@ -107,7 +110,9 @@ class LargeTiffLoader:
             filename = os.fsdecode(file)
             if filename.endswith(self.image_suffix):
                 name=filename.split('.')[0]
+                
                 raster_file = rasterio.open(f'{self.image_directory}/{filename}')
+               
                 full_img = raster_file.read([1,2,3]).transpose(1,2,0)
                 
                 HEIGHT_orig, WIDTH_orig = full_img.shape[:2]
@@ -125,8 +130,8 @@ class LargeTiffLoader:
                 # else:
                 #     print("provide .tiff or .shp mask file")  
                 #     return
-                
-                mask = rasterio.open(glob.glob(f'{mask_directory}/{name}{mask_suffix}'))
+              
+                mask = rasterio.open(glob.glob(f'{mask_directory}/{name}{mask_suffix}')[0])
                 mask = mask.read()[0]#.transpose(1,2,0)
                 
 
@@ -136,8 +141,8 @@ class LargeTiffLoader:
                 #full_img = raster_file.read().transpose(1,2,0)[:,:,0]
                 #full_img = cv2.cvtColor(full_img,cv2.COLOR_GRAY2RGB)
 
-                full_img, rrp_info = utils.ratio_resize_pad(full_img, ratio = None, div=fragment_size)
-                full_mask, mask_rrp_info = utils.ratio_resize_pad(mask, ratio = None, div=fragment_size)
+                full_img, rrp_info = ratio_resize_pad(full_img, ratio = None, div=fragment_size)
+                full_mask, mask_rrp_info = ratio_resize_pad(mask, ratio = None, div=fragment_size)
 
 
                 HEIGHT, WIDTH = full_img.shape[:2]
@@ -159,7 +164,7 @@ class LargeTiffLoader:
                         patch = full_img[hs:he,ws:we,:]
                         patch_mask = full_mask[hs:he,ws:we]
                       
-                        shapes = rasterio.features.shapes(patch_mask)
+                        shapes = rio_shapes(patch_mask)
                         geometry = []
                         for shapedict, value in shapes:
                             if value == 0:
