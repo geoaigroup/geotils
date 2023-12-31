@@ -95,7 +95,7 @@ def noise_filter(washed,mina):
     values = np.unique(washed)
     for val in values[1:]:
         area = (washed[washed == val]>0).sum()
-        if(area<=mina):  
+        if area<=mina:
             washed[washed == val] = 0
     return washed
 
@@ -114,14 +114,17 @@ def extract_poly(mask):
     """
     shps = shapes(mask.astype(np.int16), mask > 0)
     polys = []
-
-    for shp, value in shps:
-        p = shape(shp).buffer(0.0)
-        typ = p.geom_type
-        if typ == 'Polygon' or typ == 'MultiPolygon':
-            polys.append(p.simplify(0.01))
-        else:
-            continue
+    #check for validity to avoid crashes
+    try:
+        for shp, _ in shps:
+            p = shape(shp).buffer(0.0)
+            typ = p.geom_type
+            if typ == 'Polygon' or typ == 'MultiPolygon':
+                polys.append(p.simplify(0.01))
+            else:
+                continue
+    except:
+        return None
 
     if len(polys) == 0:
         return None
