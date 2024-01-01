@@ -5,7 +5,7 @@ from . import get_optimizer,optimizer_mapping
 import numpy as np
 
 
-class testOptimizers(unittest.TestCase):
+class TestOptimizers(unittest.TestCase):
     def test_getoptimzer_return(self):
         for optimizer in optimizer_mapping:
             net=nn.Sequential(
