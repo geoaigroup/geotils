@@ -1,13 +1,21 @@
 import torch
 from torch.optim.lr_scheduler import (
-    CosineAnnealingWarmRestarts, CosineAnnealingLR, 
+    CosineAnnealingWarmRestarts, 
+    CosineAnnealingLR, 
     MultiStepLR,
     LambdaLR,
     OneCycleLR,
     ConstantLR,
-    #ReduceLROnPlateau,
-    #LinearLR,
-    #ExponentialLR
+    ReduceLROnPlateau,
+    LinearLR,
+    ExponentialLR,
+    MultiplicativeLR,
+    StepLR,
+    PolynomialLR,
+    ChainedScheduler,
+    SequentialLR,
+    CyclicLR,
+    LRScheduler
     )
 # polylr
 from .polylr import PolyLR,PolyLR_WWP
@@ -26,11 +34,32 @@ scheduler_mapping = {
     'lambdalr' : LambdaLR,
     'onecyclelr' : OneCycleLR,
     'constantlr' : ConstantLR,
-    #'linearlr' : LinearLR,
-    #'exponentiallr' : ExponentialLR
+    'linearlr' : LinearLR,
+    'exponentiallr' : ExponentialLR,
+    'reducelronplateau':ReduceLROnPlateau,
+    'multiplicativelr':MultiplicativeLR,
+    'steplr':StepLR,
+    'polynomiallr':PolynomialLR,
+    'chainedscheduler':ChainedScheduler,
+    'sequentiallr':SequentialLR,
+    'cycliclr':CyclicLR,
 }
-# schedulers
-def get_scheduler(name, optimizer, **kwargs):
+
+
+def get_scheduler(name :str, optimizer :torch.optim.Optimizer, **kwargs) -> LRScheduler:
+    """
+    This function returns the scheduler given its name
+
+    @param name: name of the scheduler
+    @param params: Optimeizer to schedule
+    @param **kwargs:named parameters for the sheduler
+
+    @type name:str
+    @type optimizer: torch.optim.Optimizer
+    
+    @return: torch.optim.lr_scheduler.LRScheduler
+
+    """
     name = name.lower()
     if name not in scheduler_mapping.keys():
         raise ValueError(f'scheduler {name} is not implemented!!!')
@@ -38,19 +67,37 @@ def get_scheduler(name, optimizer, **kwargs):
     return scheduler_mapping[name](optimizer=optimizer, **kwargs)
 
 class AutoScheduler:
-
+    """
+    This class automate the step of the schechduler, the user will call scheduler.step on every iteration and the scheduler once required
+    """
     def __init__(
             self,
-            name,
-            optimizer,
+            name :str,
+            optimizer :torch.optim.Optimizer,
             data_loader = None,
-            total_epochs = None,
-            iters_per_epoch = None,
-            mode = 'per_epoch', #per_epoch #per_iter
+            total_epochs :int = None,
+            iters_per_epoch :int|None = None,
+            mode = 'per_epoch', 
             **kwargs
             ):
         
-        assert isinstance(total_epochs,int)
+        """
+            This function returns the scheduler given its name
+
+            @param name: name of the scheduler
+            @param params: Optimeizer to schedule
+            @param data_loader: (optional) used to find the iters_per_epoch
+            @param total_epochs: (optional)
+            @param iters_per_epoch: (optional)
+            @param **kwargs:named parameters for the sheduler
+
+            @type name:str
+            @type optimizer: torch.optim.Optimizer
+
+
+        """
+        
+        assert isinstance(total_epochs,int), "the total_epochs must be an int"
         if data_loader is not None:
             self.iters_per_epoch = len(data_loader)
         elif isinstance(iters_per_epoch,int):
@@ -71,17 +118,25 @@ class AutoScheduler:
         self.scheduler = get_scheduler(name=name,optimizer=optimizer,**kwargs)
     
     def set_mode(self,mode):
+        """
+        sets mode of the iter_counter
+        @param mode: can be only 'per_epoch' or 'per_iter'
+        """
         assert mode in ['per_epoch','per_iter']
         self.mode = mode
         self.set_stepsize()
 
     def set_stepsize(self):
+        """define stepsize"""
         if self.mode == 'per_epoch':
             self.stepsize = self.iters_per_epoch
         else:
             self.stepsize = 1
 
     def step(self):
+        """
+            done in each iteration, steps only when iter_counter == self.stepsize 
+        """
         self.iter_counter += 1
 
         if self.iter_counter > self.total_iters:
