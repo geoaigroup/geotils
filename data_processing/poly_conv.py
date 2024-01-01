@@ -21,17 +21,32 @@ import torch.nn as nn
 
 
 def binary_mask_to_polygon(binary_mask):
-    # Find contours in the binary mask
+    """
+    @param binary_mask = binary mask to be converted in to polygon
+    @type binary_mask = numpy array
+
+    Returns:
+    polygon = converted polygon
+    """
+  
     contours = measure.find_contours(binary_mask, 0.5)
-    # Get the largest contour (in case there are multiple objects)
     max_contour = max(contours, key=len)
 
-    # Convert the contour points to a polygon (list of (x, y) coordinates)
     polygon = Polygon([(int(point[1]), int(point[0])) for point in max_contour])
 
     return polygon
 
 def convert_polygon_to_mask(geo,shape,transform=None):
+    """
+    @param geo = polygons' geometry to be converted
+    @param shape = shape of the mask to be generated
+    @param transform = flag param if polygons are georeferenced
+    @type geo = geopandas ['geometry']
+
+    Returns:
+    gtmask = mask of type array
+    """
+
     gtmask=np.zeros(shape)
     if transform:
        for orig_row in geo:
@@ -68,6 +83,15 @@ def convert_polygon_to_mask(geo,shape,transform=None):
 
 
 def convert_polygon_to_mask_batch(geo,shape,transform):
+  """
+    @param geo = polygons' geometry to be converted
+    @param shape = shape of the mask to be generated
+    @param transform = transformation information for polygons
+    @type geo = geopandas ['geometry']
+
+    Returns:
+    gtmask = list of numpy array masks, each contain a polygon
+    """ 
   gtmask=[]
   if transform:
      for row in geo:

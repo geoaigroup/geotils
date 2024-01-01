@@ -7,7 +7,7 @@ from shapely.geometry import Polygon, MultiPolygon
 from skimage.draw import polygon
 from skimage.morphology import erosion, square, binary_erosion
 from skimage.io import imread,imsave
-from utils import colorize,create_path
+from utility import colorize,create_path
 from tqdm import tqdm
 
 import rasterio as rs
