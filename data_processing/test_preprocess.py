@@ -26,6 +26,8 @@ class TestLargeTiffLoader(unittest.TestCase):
         # Clean up the temporary directory
         if os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
+        if os.path.exists(self.temp1_dir):
+            shutil.rmtree(self.temp1_dir)
 
 
     def create_dummy_image(self):
