@@ -1,5 +1,4 @@
-import torch
-from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts, CosineAnnealingLR, MultiStepLR,LambdaLR
+from torch.optim.lr_scheduler import LambdaLR
 # polylr
 
 class PolyLR_WWP(LambdaLR):
