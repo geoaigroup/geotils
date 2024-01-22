@@ -7,6 +7,8 @@ from skimage.morphology import dilation,square,erosion
 from skimage.segmentation import watershed
 from skimage.measure import label
 from PIL import Image,ImageDraw
+
+import pandas as pd
 from shapely.geometry import shape
 from shapely.wkt import dumps
 from shapely.ops import cascaded_union

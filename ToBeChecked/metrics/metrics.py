@@ -10,7 +10,7 @@ import os
 import json
 import glob
 import keras.backend as K
-from utils.poly_conv import convert_polygon_to_mask_batch,binary_mask_to_polygon
+from utililities.poly_conv import convert_polygon_to_mask_batch,binary_mask_to_polygon
 import pandas as pd
 
 from segmentation_models_pytorch.utils.metrics import Accuracy,Recall
@@ -198,57 +198,6 @@ class Fscore(Metric):
 
 
 
-
-def hard_dice_coef_mask(y_true, y_pred, smooth=1e-3):
-    y_true_f = K.flatten(K.round(y_true[..., 0]))
-    y_pred_f = K.flatten(K.round(y_pred[..., 0]))
-    intersection = K.sum(y_true_f * y_pred_f)
-    return 100. * (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
-
-
-def hard_jacard_coef_mask(y_true, y_pred, smooth=1e-3):
-    # K.flatten(K.round(y_true[..., 0]))
-    y_true_f = K.flatten(K.round(y_true[..., 0]))
-    y_pred_f =K.flatten(K.round(y_pred[..., 0]))
-    intersection = K.sum(y_true_f * y_pred_f)
-    return (intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) - intersection + smooth)
-
-def Jaccard_micro_building(y_true, y_pred):
-    y_true_f = K.flatten(K.round(y_true[..., 0]))
-    y_pred_f =K.flatten(K.round(y_pred[..., 0]))
-    tp=K.sum(y_true_f*y_pred_f)
-    fn=K.sum(y_true_f*(1.- y_pred_f))
-    fp=K.sum((1. - y_true_f)*y_pred_f)
-    return (tp+1e-3)/(tp+fn+fp+1e-3)
-    
-
-def hard_dice_coef_border(y_true, y_pred, smooth=1e-3):
-    y_true_f = K.flatten(K.round(y_true[..., 1]))
-    y_pred_f = K.flatten(K.round(y_pred[..., 1]))
-    intersection = K.sum(y_true_f * y_pred_f)
-    return 100. * (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
-
-
-def hard_jacard_coef_border(y_true, y_pred, smooth=1e-3):
-    # K.flatten(K.round(y_true[..., 0]))
-    y_true_f = K.flatten(K.round(y_true[..., 1]))
-    y_pred_f =K.flatten(K.round(y_pred[..., 1]))
-    intersection = K.sum(y_true_f * y_pred_f)
-    return 100.0 * (intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) - intersection + smooth)
-
-def hard_dice_coef_spacing(y_true, y_pred, smooth=1e-3):
-    y_true_f = K.flatten(K.round(y_true[..., 2]))
-    y_pred_f = K.flatten(K.round(y_pred[..., 2]))
-    intersection = K.sum(y_true_f * y_pred_f)
-    return 100. * (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
-
-
-def hard_jacard_coef_spacing(y_true, y_pred, smooth=1e-3):
-    # K.flatten(K.round(y_true[..., 0]))
-    y_true_f = K.flatten(K.round(y_true[..., 2]))
-    y_pred_f =K.flatten(K.round(y_pred[..., 2]))
-    intersection = K.sum(y_true_f * y_pred_f)
-    return 100.0 * (intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) - intersection + smooth)
 
 
 # def calc_iou(gt_masks, predicted_masks, height=768, width=768):
