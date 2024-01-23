@@ -39,11 +39,11 @@ class TorchRandomRotate(nn.Module):
 
     Args:
         degrees (tuple or list): Range of possible rotation angles.
-        probability (float): Probability of applying the rotation.
-        interpolation (InterpolationMode): Interpolation mode for rotation.
-        center (tuple or None): Center of rotation. If None, the center is the center of the image.
-        fill (float): Value to fill the image during rotation.
-        mask_fill (float): Value to fill the mask during rotation.
+        probability (float, default=1): Probability of applying the rotation.
+        interpolation (InterpolationMode, default=BILINEAR): Interpolation mode for rotation.
+        center (tuple, Optional): Center of rotation. If None, the center is the center of the image.
+        fill (float, default=0): Value to fill the image during rotation.
+        mask_fill (float, default=0): Value to fill the mask during rotation.
 
     Returns:
         tuple: Tuple containing the rotated image and mask (if provided).
@@ -119,10 +119,10 @@ class RandomMaskIgnore(nn.Module):
     It modifies the input mask tensor in-place, and the modified tensor is returned.
 
     Args:
-        min_length (int): Minimum length of the randomly generated bounding box.
-        max_length (int): Maximum length of the randomly generated bounding box.
-        proba (float): Probability of applying the random mask modification.
-        ignore_index (int): Value used to fill the masked region.
+        min_length (int, default=50): Minimum length of the randomly generated bounding box.
+        max_length (int, default=100): Maximum length of the randomly generated bounding box.
+        proba (float, default=0.5): Probability of applying the random mask modification.
+        ignore_index (int, default=-10): Value used to fill the masked region.
     """
 
     def __init__(self,min_length=50,max_length=100,proba=0.5,ignore_index=-10):
@@ -196,9 +196,9 @@ class MaskPixelDrop(nn.Module):
     MaskPixelDrop randomly drops pixels in the input mask tensor based on specified probabilities for positive and negative drops.
     
     Args:
-        neg_drop (int or tuple): Probability range for dropping negative pixels. Default is (0, 50).
-        pos_drop (int or tuple): Probability range for dropping positive pixels. Default is (0, 50).
-        ignore_index (int): Value used to fill the dropped pixels. Default is -10.
+        neg_drop (int or tuple, default for int =50): Probability range for dropping negative pixels. Default is (0, 50).
+        pos_drop (int or tuple, default for int =50): Probability range for dropping positive pixels. Default is (0, 50).
+        ignore_index (int, default=-10): Value used to fill the dropped pixels. Default is -10.
 
     Returns:
         torch.Tensor: Modified mask tensor with dropped pixels.
