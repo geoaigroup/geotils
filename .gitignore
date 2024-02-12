@@ -1,0 +1,4 @@
+# Python build
+build/
+geotils.egg-info
+dist/
