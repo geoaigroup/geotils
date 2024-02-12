@@ -1,0 +1,25 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Testing automation
+
+on:
+  push:
+    branches: ["CI-CD"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Python dependencies
+        run: |
+          pip install numpy geopandas shapely scikit-learn tabulate timm torchvision
+
+      - name: Run unit tests
+        working-directory: geotils/testing-framework
+        run: |
+          python -m unittest discover -s . -p 'test*.py'
