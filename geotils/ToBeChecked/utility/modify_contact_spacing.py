@@ -22,7 +22,8 @@ most of these functions were commented before in make_dataset.py
 """
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
-from skimage.morphology import dilation, square, watershed
+from skimage.morphology import dilation, square
+from skimage.segmentation import watershed
 import cv2
 import os
 import argparse
