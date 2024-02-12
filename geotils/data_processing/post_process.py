@@ -7,7 +7,6 @@ from skimage.morphology import dilation,square,erosion
 from skimage.segmentation import watershed
 from skimage.measure import label
 from PIL import Image,ImageDraw
-
 import pandas as pd
 from shapely.geometry import shape
 from shapely.wkt import dumps
@@ -23,10 +22,10 @@ class PostProcessing():
 
         Args:
             pred (numpy.ndarray): Prediction mask with shape (height, width, channels).
-            thresh (float): Threshold for considering pixels as part of the final segmentation.
-            thresh_b (float): Threshold for considering pixels as borders between objects.
-            mina (int): Minimum area threshold for retaining segmented regions.
-            mina_b (int): Minimum area threshold for retaining basins.
+            thresh (float, default=0.5): Threshold for considering pixels as part of the final segmentation.
+            thresh_b (float, default=0.6): Threshold for considering pixels as borders between objects.
+            mina (int, default=100): Minimum area threshold for retaining segmented regions.
+            mina_b (int, default=50): Minimum area threshold for retaining basins.
 
         Returns:
             numpy.ndarray: Refined segmentation mask.
@@ -147,8 +146,8 @@ class PostProcessing():
 
         Args:
             instance_mask (numpy.ndarray): Input instance mask with shape (H, W), where each instance is labeled by a unique id/number.
-            transform (affine.Affine or None): Geospatial transform of the raster. Default is None.
-            crs (str or None): CRS of the raster. Default is None.
+            transform (affine.Affine, Optional): Geospatial transform of the raster. Default is None.
+            crs (str, Optional): CRS of the raster. Default is None.
 
         Returns:
             geopandas.GeoDataFrame: GeoDataFrame of the shapes projected to the specified CRS using the transform.
