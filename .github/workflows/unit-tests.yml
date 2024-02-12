@@ -17,7 +17,7 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          pip install numpy geopandas shapely scikit-learn tabulate timm torchvision rasterio skimage matplotlib affine cv2
+          pip install numpy geopandas shapely scikit-learn tabulate timm torchvision rasterio scikit-image matplotlib affine cv2
 
       - name: Run unit tests
         working-directory: geotils/testing-framework
