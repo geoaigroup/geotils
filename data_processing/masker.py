@@ -64,6 +64,7 @@ class Masker:
         """        
         jfile = open(json_path, 'r')
         f = json.load(jfile)
+        jfile.close()
         return f
 
     
@@ -199,7 +200,7 @@ class Masker:
         return img[y_off : y_off + h, x_off : x_off + w]
 
     
-    def make_mask(
+    def make_mask_with_borders(
         self, polys: List[Polygon], size: Tuple[int, int] = (1024, 1024)
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         r"""Generate mask from polygons.
@@ -236,19 +237,19 @@ class Masker:
                 _b = k[0].max() + 2
                 _r = k[1].max() + 2
 
-                crop_instance = instance[_t:_b, _l:_r]
-                bld = binary_erosion(crop_instance, strc)
+                crop_instance = instance[_t:_b, _l:_r]                
+                bld = binary_erosion(crop_instance, footprint=strc)
                 brdr = bld ^ crop_instance
                 brdr1 = np.zeros_like(instance, dtype=brdr.dtype)
                 brdr1[_t:_b, _l:_r] = brdr
                 border[brdr1 == True] = np.uint8(255)
 
             except:
-                bld = binary_erosion(instance, strc)
+                bld = binary_erosion(instance, footprint=strc)
                 brdr = bld ^ instance
                 border[brdr == True] = np.uint8(255)
 
-        builds[instances > 0] = np.uint8(255)
+        builds[instances > 0] = np.uint8(255)        
         return instances, builds, border
 
 
@@ -276,13 +277,13 @@ class Masker:
         for label in labels:
             multipoly = label['geometry']['coordinates']
             proj_multipoly = []
-            for poly in multipoly:
+            for poly in multipoly:                
                 mm = self.project_poly(poly, raster, self.pd_sz, self.x_off, self.y_off)
                 if len(mm) > 0:
                     proj_multipoly.append(mm)
             polys.append(proj_multipoly)
 
-        ins, b, br = self.make_mask(polys, size=self.pd_sz)
+        ins, b, br = self.make_mask_with_borders(polys, size=self.pd_sz)
         kwargs = {'y_off': self.y_off, 'x_off': self.x_off, 'h': self.sz[0], 'w': self.sz[1]}
         ins = self.crop(ins, **kwargs)
         b = self.crop(b, **kwargs)
@@ -388,43 +389,43 @@ class Masker:
         return ins_mask
 
     
-    def borders(self, ins_mask: np.ndarray) -> np.ndarray:
-        r"""Generate borders mask from instances mask.
+    # def borders(self, ins_mask: np.ndarray) -> np.ndarray:
+    #     r"""Generate borders mask from instances mask.
 
-        Parameters
-        ----------
-        ins_mask : np.ndarray
-            Instances mask.
+    #     Parameters
+    #     ----------
+    #     ins_mask : np.ndarray
+    #         Instances mask.
 
-        Returns
-        -------
-        np.ndarray
-            Borders mask.
-        """        
-        ins_borders = np.zeros_like(ins_mask,dtype = np.int32)
-        ids = sorted(np.unique(ins_mask))[1:]
-        strc = self.get_strc()
-        for iid in ids:
-            instance = ins_mask == iid
-            try:
-                k=np.where(instance>0)
-                _t = k[0].min() - 3
-                _l = k[1].min() - 3
-                _b = k[0].max() + 3
-                _r = k[1].max() + 3
+    #     Returns
+    #     -------
+    #     np.ndarray
+    #         Borders mask.
+    #     """        
+    #     ins_borders = np.zeros_like(ins_mask,dtype = np.int32)
+    #     ids = sorted(np.unique(ins_mask))[1:]
+    #     strc = self.get_strc()
+    #     for iid in ids:
+    #         instance = ins_mask == iid
+    #         try:
+    #             k=np.where(instance>0)
+    #             _t = k[0].min() - 3
+    #             _l = k[1].min() - 3
+    #             _b = k[0].max() + 3
+    #             _r = k[1].max() + 3
                 
-                crop_instance = instance[_t:_b,_l:_r]
-                bld = binary_erosion(crop_instance, strc)
-                brdr = bld ^ crop_instance
-                brdr1 = np.zeros_like(instance,dtype=brdr.dtype)
-                brdr1[_t:_b,_l:_r] =brdr
-                ins_borders[brdr1 == True] = iid
+    #             crop_instance = instance[_t:_b,_l:_r]
+    #             bld = binary_erosion(crop_instance, strc)
+    #             brdr = bld ^ crop_instance
+    #             brdr1 = np.zeros_like(instance,dtype=brdr.dtype)
+    #             brdr1[_t:_b,_l:_r] =brdr
+    #             ins_borders[brdr1 == True] = iid
                 
-            except:
-                bld = binary_erosion(instance, strc)
-                brdr = bld ^ instance
-                ins_borders[brdr == True] = iid
-        return ins_borders
+    #         except:
+    #             bld = binary_erosion(instance, strc)
+    #             brdr = bld ^ instance
+    #             ins_borders[brdr == True] = iid
+    #     return ins_borders
 
     
     def to_rgb(self, img: np.ndarray) -> np.ndarray:
