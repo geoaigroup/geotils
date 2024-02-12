@@ -121,7 +121,7 @@ class Masker:
 
         Parameters
         ----------
-        raster_ file : rs.DatasetReader
+        raster_file : rs.DatasetReader
             Rasterio dataset reader.
 
         Returns
