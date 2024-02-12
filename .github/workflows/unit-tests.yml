@@ -4,8 +4,8 @@
 name: Testing automation
 
 on:
-  push:
-    branches: ["CI-CD"]
+  pull_request:
+    branches: ["main"]
 
 jobs:
   test:
