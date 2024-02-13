@@ -1,11 +1,11 @@
-import unittest
-import os
+import unittest, os, sys
 import shutil
 import geopandas as gpd
 from shapely.geometry import Point
 from tempfile import TemporaryDirectory
 from PIL import Image
-from cropping import CropGeoTiff  # Replace 'your_module' with the actual module name
+sys.path.append('../')
+from data_processing.cropping import CropGeoTiff  
 
 class TestCropGeoTiff(unittest.TestCase):
 

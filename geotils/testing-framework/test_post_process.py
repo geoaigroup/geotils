@@ -1,7 +1,9 @@
-import unittest
+import unittest, sys
 from shapely.geometry import Polygon, MultiPolygon
 from affine import Affine
-from post_process import *
+
+sys.path.append('../')
+from data_processing.post_process import *
 
 class TestPostProcess(unittest.TestCase):
     def test_single_channel(self):

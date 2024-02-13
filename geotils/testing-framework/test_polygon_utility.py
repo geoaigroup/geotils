@@ -1,10 +1,9 @@
-import unittest
+import unittest, sys
 import numpy as np
 import torch
-import cv2
 import geopandas as gpd
 from shapely.geometry import Polygon
-from PIL import Image
+sys.path.append('../')
 from data_processing.polygon_utility import binary_mask_to_polygon, convert_polygon_to_mask, convert_polygon_to_mask_batch, ArgMax
 
 class TestFunctions(unittest.TestCase):

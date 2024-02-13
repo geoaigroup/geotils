@@ -7,7 +7,6 @@ from shapely.geometry import Polygon, MultiPolygon
 from skimage.draw import polygon
 from skimage.morphology import erosion, square, binary_erosion
 from skimage.io import imread, imsave
-from utils import create_path
 from tqdm import tqdm
 
 import rasterio as rs
@@ -475,7 +474,7 @@ class Masker:
         -------
         None
         """        
-        create_path(save_path)
+        os.mkdir(save_path)
         ids = sorted(os.listdir(data))
         for iid in ids[42:]:
             imgs_save = f'{save_path}/{iid}'
@@ -484,11 +483,11 @@ class Masker:
             lod = os.listdir(imgs_path)
             loader = tqdm(lod) if(self.itr_vrbs) else lod
             loader.set_description(f'{iid}')
-            create_path(imgs_save)
+            os.mkdir(imgs_save)
             for exten in loader:
                 e = exten.split('.tif')[0]
                 img_save = f'{imgs_save}/{e}'
-                create_path(img_save)
+                os.mkdir(img_save)
                 
                 img_rgba = imread(f'{imgs_path}/{e}.tif')
                 img_rgb = self.to_rgb(img_rgba)

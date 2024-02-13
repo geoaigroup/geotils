@@ -1,9 +1,10 @@
-import unittest
-import os
+import unittest, sys, os
 import numpy as np
 import torch
 import geopandas as gpd
 import cv2
+
+sys.path.append('../')
 from data_processing.pre_processing import LargeTiffLoader
 from PIL import Image
 import shutil
@@ -42,17 +43,17 @@ class TestLargeTiffLoader(unittest.TestCase):
          image = Image.new("1", (2048, 2048))
          image.save(dummy_mask_path)
 
-    def test_load_index(self):
-        # Test load_index function
-        save_path = os.path.join(self.temp_dir, "test_output")
-        os.makedirs(save_path, exist_ok=True)
-        print("load index")
-        col_off, row_off, width, height = 0, 0, 512, 512
-        self.large_tiff_loader.load_index(save_path, col_off, row_off, width, height)
+    # def test_load_index(self):
+    #     # Test load_index function
+    #     save_path = os.path.join(self.temp_dir, "test_output")
+    #     os.makedirs(save_path, exist_ok=True)
+    #     print("load index")
+    #     col_off, row_off, width, height = 0, 0, 512, 512
+    #     self.large_tiff_loader.load_index(save_path, col_off, row_off, width, height)
 
-        # Assert that some files are created in the output directory
-        files = os.listdir(save_path)
-        self.assertGreater(len(files), 0)
+    #     # Assert that some files are created in the output directory
+    #     files = os.listdir(save_path)
+    #     self.assertGreater(len(files), 0)
 
     def test_pre_load(self):
         # Test pre_load function

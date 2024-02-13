@@ -1,7 +1,8 @@
-import random
+import random, sys, unittest
 import torch
 import torch.nn as nn
-from augmentation import *
+sys.path.append('../')
+from data_processing.augmentation import *
 from torchvision.transforms.functional import rotate
 from torchvision.transforms import InterpolationMode
 

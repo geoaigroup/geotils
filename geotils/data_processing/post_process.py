@@ -10,7 +10,7 @@ from PIL import Image,ImageDraw
 import pandas as pd
 from shapely.geometry import shape
 from shapely.wkt import dumps
-from shapely.ops import cascaded_union
+from shapely.ops import unary_union
 
 
 class PostProcessing():
@@ -108,7 +108,7 @@ class PostProcessing():
         """
         Extract polygons from a binary mask using the `rasterio.features.shapes` method.
         It then processes each shape, converts it to a Shapely Polygon, and appends it to a list.
-        The list of polygons is then combined into a single geometry using `shapely.ops.cascaded_union`.
+        The list of polygons is then combined into a single geometry using `shapely.ops.unary_union`.
         The resulting polygon or None (if no polygons are found) is returned.
 
         Args:
@@ -134,7 +134,7 @@ class PostProcessing():
         if len(polys) == 0:
             return None
         else:
-            return cascaded_union(polys)
+            return unary_union(polys)
         
     @staticmethod    
     def instance_mask_to_gdf(instance_mask, transform=None, crs=None):

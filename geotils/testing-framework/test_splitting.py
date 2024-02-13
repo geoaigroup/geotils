@@ -1,5 +1,8 @@
-import unittest
+import unittest, sys
 import numpy as np
+import pandas as pd 
+sys.path.append('../')
+from data_processing.splitting import Splitting
 
 class TestSplitKFolds(unittest.TestCase):
     #Create a dataset to be used in the test cases

@@ -27,8 +27,8 @@ from rasterio import windows
 from rasterio import warp
 from rasterio.transform import from_bounds
 from PIL import Image,ImageDraw
-from skimage.morphology import dilation, square, watershed
-import solaris as sol
+from skimage.morphology import dilation, square
+from skimage.segmentation import watershed
 from simplification.cutil import simplify_coords_vwp
 from imantics import Mask
 import numpy as np

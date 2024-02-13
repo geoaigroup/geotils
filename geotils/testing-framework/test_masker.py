@@ -1,17 +1,18 @@
-import unittest
+import unittest, sys
 import json
 import numpy as np
 from shapely.geometry import Polygon, polygon
 from skimage.morphology import square
 import rasterio as rs
 
-from maskers import Masker 
+sys.path.append('../')
+from data_processing.masker import Masker 
 
 class TestMasker(unittest.TestCase):
 
     def test_load_labels(self):
         masker = Masker()
-        json_path = "labels.json"  
+        json_path = "assets/labels.json"  
         labels = masker.load_labels(json_path)
         self.assertIsInstance(labels, dict)
 
@@ -37,24 +38,24 @@ class TestMasker(unittest.TestCase):
 
     def test_load_raster_file(self):
         masker = Masker()
-        raster_path = "file.tif"
+        raster_path = "assets/file.tif"
         raster_reader = masker.load_raster_file(raster_path)
         self.assertIsInstance(raster_reader, rs.DatasetReader)
 
 
     def test_get_img(self):
         masker = Masker()  
-        raster_path = "file.tif"
+        raster_path = "assets/file.tif"
         raster_file = rs.open(raster_path)
         result = masker.get_img(raster_file)
-        expected = np.load('test_get_img.npy')
+        expected = np.load('assets/test_get_img.npy')
         np.testing.assert_array_equal(result,expected)
 
 
     def test_project_poly(self):
         masker = Masker()
         poly = [(0.0, 0.0), (1.0, 1.0), (2.0, 0.0)]
-        frs = rs.open("file.tif")
+        frs = rs.open("assets/file.tif")
         size = (1024, 1024)
         result = masker.project_poly(poly, frs, size)
         
@@ -93,8 +94,8 @@ class TestMasker(unittest.TestCase):
         
     def test_mask(self):        
         masker = Masker() 
-        raster_path = "file.tif"
-        json_path = "labels.json"
+        raster_path = "assets/file.tif"
+        json_path = "assets/labels.json"
         result = masker.mask(raster_path, json_path)
         self.assertIsInstance(result, tuple)
         self.assertIsInstance(result[0], np.ndarray)
