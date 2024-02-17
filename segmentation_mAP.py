@@ -1,6 +1,6 @@
 '''
 URL : https://github.com/cosmiq/solaris
-Code based on: https://github.com/CosmiQ/solaris/blob/main/solaris/eval/vector.py
+Code based on: https://github.com/CosmiQ/solaris/blob/main/solaris/eval/vector.py with some modifications
 '''
 
 import os
@@ -17,8 +17,9 @@ def average_score_by_class(ious, threshold=0.5):
     ---------
         ious : list of lists
             A list containing individual lists of ious for eachobject class.
-        threshold : float
+        threshold : float , optional
             A value between 0.0 and 1.0 that determines the threshold for a true positve.
+            The 0.5 is its default value , which it can be changed optionally.
     Returns
     ---------
         average_by_class : list
@@ -98,10 +99,12 @@ def get_all_objects(proposal_polygons_dir, gt_polygons_dir,
         prediction_cat_attrib : str
             The column or attribute within the predictions that specifies
             unique classes
-        gt_cat_attrib : str
+            replace "class" with the column/attribute name
+        gt_cat_attrib : str 
             The column or attribute within the ground truth that
             specifies unique classes
-        file_format : str
+            replace 'make' with the column/attribute name
+        file_format : str , optional
             The extension or file format for predictions
     Returns
     ---------
@@ -139,6 +142,77 @@ def get_all_objects(proposal_polygons_dir, gt_polygons_dir,
     all_objs = gt_objs + prop_objs
     all_objs = list(set(all_objs))
     return prop_objs, gt_objs, all_objs
+                        
+def calculate_matching_iou(iou_GDF, proposal_row, ground_truth_gdf, prediction_cat_attrib, gt_cat_attrib):
+    """
+    Calculate the matching IoU for a single proposal against ground truth.
+
+    Arguments:
+    -----------
+    iou_GDF : GeoDataFrame
+        GeoDataFrame containing IoU scores.
+    proposal_row : GeoSeries
+        The row from the proposal GeoDataFrame.
+    ground_truth_gdf : GeoDataFrame
+        The GeoDataFrame containing ground truth polygons.
+    prediction_cat_attrib : str
+        The attribute in the proposal for class/category.
+    gt_cat_attrib : str
+        The attribute in the ground truth for class/category.
+
+    Returns:
+    --------
+    float
+        The IoU score if a matching ground truth is found, 0 otherwise.
+    """
+    if 'iou_score' in iou_GDF.columns:
+        # Find the maximum IoU score and corresponding ground truth
+        iou = iou_GDF.iou_score.max()
+        max_iou_row = iou_GDF.loc[iou_GDF['iou_score'].idxmax()]
+        id_1 = proposal_row[prediction_cat_attrib]
+        id_2 = ground_truth_gdf.loc[max_iou_row.name][gt_cat_attrib]
+
+        # Check if the class/category matches
+        if id_1 == id_2:
+            ground_truth_gdf.drop(max_iou_row.name, axis=0, inplace=True)
+            return iou
+    return 0
+
+def process_object_category(proposal_gdf, object_category, gt_cat_attrib, confidence_attrib=None):
+    """
+    Process each object category for IoU and confidence score accumulation.
+
+    Arguments:
+    -----------
+    proposal_gdf : GeoDataFrame
+        The GeoDataFrame containing proposal polygons.
+    object_category : str
+        The current object category to process.
+    gt_cat_attrib : str
+        The attribute in the ground truth for class/category.
+    confidence_attrib : str, optional
+        The attribute in the proposal for confidence scores.
+
+    Returns:
+    --------
+    ious : list
+        List of IoU scores for the object category (all zeros in this case).
+    confidences : list
+        List of confidence scores for the object category.
+    """
+    ious = []
+    confidences = []
+    proposal_gdf_filtered = proposal_gdf[proposal_gdf[gt_cat_attrib] == object_category]
+
+    for _ in range(len(proposal_gdf_filtered)):
+        ious.append(0)  # Append 0 for IoU as there's no matching ground truth
+
+    if confidence_attrib:
+        confidences = [row[confidence_attrib] for _, row in proposal_gdf_filtered.iterrows()]
+
+    return ious, confidences
+
+
 
 
 def precision_calc(proposal_polygons_dir, gt_polygons_dir,
@@ -156,12 +230,15 @@ def precision_calc(proposal_polygons_dir, gt_polygons_dir,
         prediction_cat_attrib : str
             The column or attribute within the predictions that specifies
             unique classes
+            replace "class" with the name of the column/attribute
         gt_cat_attrib : str
             The column or attribute within the ground truth that
             specifies unique classes
+            replace "make" with the name of the column/attribute
         confidence_attrib : str
             The column or attribute within the proposal polygons that
             specifies model confidence for each prediction
+            if it exists, replace "None" with the name of this column
         object_subset : list
             A list or subset of the unique objects that are contained within the
             ground truth polygons. If empty, this will be
@@ -169,8 +246,10 @@ def precision_calc(proposal_polygons_dir, gt_polygons_dir,
         threshold : float
             A value between 0.0 and 1.0 that determines the IOU threshold for a
             true positve.
+            It's set by default to 0.5.Can be changed optionally.
         file_format : str
             The extension or file format for predictions
+            by default set to geojson format
     Returns
     ---------
         iou_holder : list of lists
@@ -210,20 +289,8 @@ def precision_calc(proposal_polygons_dir, gt_polygons_dir,
                     if confidence_attrib is not None:
                         conf_holder.append(row[confidence_attrib])
                     iou_GDF = calculate_iou(row.geometry, ground_truth_gdf)
-                    if 'iou_score' in iou_GDF.columns:
-                        iou = iou_GDF.iou_score.max()
-                        max_iou_row = iou_GDF.loc[iou_GDF['iou_score'].idxmax(axis=0, skipna=True)]
-                        id_1 = row[prediction_cat_attrib]
-                        id_2 = ground_truth_gdf.loc[max_iou_row.name][gt_cat_attrib]
-                        if id_1 == id_2:
-                            ious.append(iou)
-                            ground_truth_gdf.drop(max_iou_row.name, axis=0, inplace=True)
-                        else:
-                            iou = 0
-                            ious.append(iou)
-                    else:
-                        iou = 0
-                        ious.append(iou)
+                    iou = calculate_matching_iou(iou_GDF, row, ground_truth_gdf, prediction_cat_attrib, gt_cat_attrib)
+                    ious.append(iou)
                 for item in ious:
                     iou_holder[i].append(item)
                 if confidence_attrib is not None:
@@ -236,15 +303,10 @@ def precision_calc(proposal_polygons_dir, gt_polygons_dir,
             proposal_gdf = gpd.read_file(geojson)
             i = 0
 
-            for obj in object_subset:
-                proposal_gdf2 = proposal_gdf[proposal_gdf[gt_cat_attrib] == obj]
-                for z in range(len(proposal_gdf2)):
-                    ious.append(0)
-                for item in ious:
-                    iou_holder[i].append(item)
-                if confidence_attrib is not None:
-                    for conf in conf_holder:
-                        confidences[i].append(conf)
+            for j, obj in enumerate(object_subset):
+                ious, conf_holder = process_object_category(proposal_gdf, obj, gt_cat_attrib, confidence_attrib)
+                iou_holder[j].extend(ious)
+                confidences[j].extend(conf_holder)
                 i += 1
                 ious = []
     precision_by_class = average_score_by_class(iou_holder, threshold=threshold)
