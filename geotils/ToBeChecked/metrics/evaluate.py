@@ -1,31 +1,63 @@
 import numpy as np
 import torch
 import matplotlib.pyplot as plt
-import cv2
 import geopandas as gpd
 import os
 import json
 import glob
-import SAMutils as utils
-# import utils
+import tmp as utils
 import pandas as pd
 
 def iou_numpy(outputs, labels):
+    """
+    Calculate the Intersection over Union (IoU) score between binary segmentation outputs and ground truth labels.
+
+    Args:
+        outputs (torch.Tensor): Binary segmentation outputs.
+        labels (torch.Tensor): Ground truth labels.
+
+    Returns:
+        torch.Tensor: IoU score.
+    """
     intersection = torch.logical_and(labels, outputs)
     union = torch.logical_or(labels, outputs)
     iou_score = torch.sum(intersection) / torch.sum(union)
     return iou_score
 
-class matching_algorithm:
+
+class MatchingAlgorithm():
+    """
+    Initialize the MatchingAlgorithm.
+    This class is designed to perform matching between ground truth bounding boxes
+    and predicted bounding boxes based on Intersection over Union (IoU) scores.
+    It takes lists of ground truth (GT) and predicted bounding boxes along with
+    an optional IoU threshold for matching.
+
+    Args:
+        gt_bbox (List[np.ndarray]): List of ground truth bounding boxes.
+        pred_bbox (List[np.ndarray]): List of predicted bounding boxes.
+        iou_threshold (float): Intersection over Union (IoU) threshold for matching. Default is 0.5.
+    """
     def __init__(self, gt_bbox, pred_bbox, iou_threshold=0.5):
         self.gt_bboxes = gt_bbox
         self.pred_bboxes = pred_bbox
         self.iou_threshold = iou_threshold
 
     def matching(self):
+        """ 
+        This method calculates the IoU scores between all pairs of ground truth
+        and predicted bounding boxes. It then identifies true positives, false positives,
+        and false negatives based on the IoU threshold. The method returns various metrics
+        including IoU list, F1 scores, indices of true positives, false positives, and false negatives.
+
+        Returns:
+            Tuple of results including IoU list, F1 scores, indices of true positives,
+            indices of false positives, indices of false negatives, matching scores,
+            precision, and recall.
+        """
         if len(self.pred_bboxes) == 0 or len(self.gt_bboxes) == 0:
             print("Both predicted and ground truth bounding boxes are empty.")
-            return [], [], [], [], [], []
+            return [], [], [], [], [], [], [], [], []
 
         iou_matrix = np.zeros((len(self.pred_bboxes), len(self.gt_bboxes)))
 
@@ -96,6 +128,19 @@ class matching_algorithm:
         return iou_list, f1_scores, tp_pred_indices, tp_gt_indices, fp_indices, fn_indices, mscores, precision, recall
 
     def tp_iou(self, tp_pred_indices, tp_gt_indices):
+        """
+        Calculate IoU for true positive matches by taking the indices of true positive predicted and 
+        ground truth boxes and calculating the Intersection over Union (IoU) scores for each true positive match.
+        It returns a tuple containing the list of IoU scores for true positive matches
+        and the average IoU.
+
+        Args:
+            tp_pred_indices (List[int]): Indices of true positive predicted boxes.
+            tp_gt_indices (List[int]): Indices of true positive ground truth boxes.
+
+        Returns:
+            Tuple containing the list of IoU scores for true positive matches and the average IoU.
+        """
         tp_iou_list = []
         for i, j in zip(tp_pred_indices, tp_gt_indices):
             iou = iou_numpy(torch.from_numpy(self.pred_bboxes[i]), torch.from_numpy(self.gt_bboxes[j]))
@@ -108,12 +153,41 @@ class matching_algorithm:
         return tp_iou_list, avg_tp_iou
 
 
-class cal_scores:
+class CalScores:
+    """
+    Initialize the CalScores class.
+    Designed for evaluating segmentation results, particularly for building detection tasks. It provides 
+    methods to calculate both micro-level and macro-level matching metrics between predicted and 
+    ground truth building masks. Additionally, it facilitates the storage and visualization of results, 
+    such as saving score files and generating annotated images.
+
+    Args:
+        output_dir (str): Directory to save output files.
+        score_dir (str): Directory to save score files.
+    """
     def __init__(self,output_dir,score_dir):
         self.output_dir=output_dir
         self.score_dir=score_dir
 
-    def micro_match_iou(self,pred_mask, name, gt, score_list, image,input_point,input_label,tile_boxes,geo,transform=None):
+    def micro_match_iou(self,pred_mask, name, gt, image,input_point,input_label,tile_boxes, save=None, visualize=None):
+        """
+        Calculate micro-level matching metrics and save results.
+        Responsible for calculating micro-level matching metrics between predicted and ground truth 
+        building masks for a specific image tile. It takes into account various metrics such as IoU 
+        (Intersection over Union), F1 score, precision, and recall. The results are stored in a JSON file, 
+        and an annotated image is generated for visual inspection.
+
+        Args:
+            pred_mask (torch.Tensor): Predicted mask.
+            name (str): Name identifier for the image.
+            gt (dict): Ground truth information.
+            image (numpy.ndarray): Input image.
+            input_point: Input points.
+            input_label: Input labels.
+            tile_boxes: Boxes related to tiles.
+            save: Flag set for saving.
+            visualize: Flag set for visualization.
+        """
         pred_tile = []
         gt_tile = []
         msk = pred_mask.int()
@@ -130,9 +204,8 @@ class cal_scores:
 
 
         gt_tile=utils.convert_polygon_to_mask_batch(gt['geometry'])
-        # gt_tile=convert_polygon_to_mask_batch_transform(gt['geometry'],transform)
 
-        matcher = matching_algorithm(gt_tile, pred_tile)
+        matcher = MatchingAlgorithm(gt_tile, pred_tile)
         iou_list, f1_scores, tp_pred_indices, tp_gt_indices, fp_indices, fn_indices, mscores, precision,recall = matcher.matching()
         tp_iou_list, avg_tp_iou = matcher.tp_iou(tp_pred_indices, tp_gt_indices)
 
@@ -143,7 +216,7 @@ class cal_scores:
         score['fn_indices'] = fn_indices
         score['Mean_iou'] = np.mean(iou_list, dtype=float)
         score['Mean_f1'] = np.mean(f1_scores, dtype=float)
-        score['avg_tp_iou'] = float(avg_tp_iou) if avg_tp_iou != None else 0.0
+        score['avg_tp_iou'] = float(avg_tp_iou) if avg_tp_iou is not None else 0.0
         score['precision'] = precision
         score['recall'] = recall
 
@@ -153,46 +226,45 @@ class cal_scores:
 
         with open(self.score_dir + f'/{name}_score.json', 'w') as f1:
             json.dump(scores_b, f1)
-
-        # polys=[]
-        # for k in pred_tile:
-        #     if not np.any(k):
-        #         continue
-        #     polys.append(utils.binary_mask_to_polygon(k))
-
-        # gdf = gpd.GeoDataFrame({
-        #                     'ImageId':name,
-        #                     'geometry':polys
-        #                     })
-        # gdf.to_file(f"{self.output_dir}/{name}/{name}.shp")
-        utils.save_shp(pred_mask,name,self.output_dir,image.shape[:2])
+            
+        if save is not None:
+            utils.save_shp(pred_mask,name,self.output_dir,image.shape[:2])
+        
         plt.figure(figsize=(10, 10))
         plt.imshow(image)
         utils.show_mask(mask_tile, plt.gca(), random_color=False)
-        if not input_point==None:
-          utils.show_points(input_point.cpu(), input_label.cpu(), plt.gca())
+        if input_point is not None:
+            utils.show_points(input_point.cpu(), input_label.cpu(), plt.gca())
         for box in tile_boxes:
             utils.show_box(box,plt.gca())
-        # for box in tile_boxes:
-        #     x = []
-        #     y = []
-        #     for i in range(len(box)):
-        #         if i % 2 == 0:
-        #             x.append(box[i])
-        #         else:
-        #             y.append(box[i])
-        #     plt.plot(x, y)
+        
+        if visualize is not None:
+            for box in tile_boxes:
+                x = []
+                y = []
+                for i in range(len(box)):
+                    if i % 2 == 0:
+                        x.append(box[i])
+                    else:
+                        y.append(box[i])
+                plt.plot(x, y)
         plt.show()
 
-        # gtmask=np.zeros((384,384))
-        # for g in gt_tile:
-        #     gtmask=g+gtmask
-        # plt.imshow(gtmask)
-        # plt.show()
+        if visualize is not None:
+            gtmask=np.zeros((384,384))
+            for g in gt_tile:
+                gtmask=g+gtmask
+            plt.imshow(gtmask)
+            plt.show()
         
 
-
     def macro_score(self):
+        """
+        Calculate macro-level matching metrics and save results.
+        Aggregates and analyzes the macro-level matching metrics for all image tiles. It reads previously 
+        generated score files, calculates average scores, and generates a CSV file summarizing the overall performance. 
+        This method provides insights into the global performance of the segmentation model across multiple tiles.
+        """
         score_list = []
         all_iou_scores = []
         all_f1_scores = []
@@ -254,9 +326,3 @@ class cal_scores:
         print("Mean tp iou score of all buildings in all tiles:", total_tpiou)
         print("Mean tp f1 score of all buildings in all tiles:", total_tpf1)
  
-
-
-
-
-
-            
