@@ -1,37 +1,12 @@
 from torchgeo.datasets import geo
 from torchgeo.datasets.geo import GeoDataset
 import matplotlib.pyplot as plt
+
+
 import numpy as np
-import pandas as pd
 
 
-import abc
-import functools
-import glob
-import os
-import re
-import sys
-import warnings
-from collections.abc import Iterable, Sequence
-from typing import Any, Callable, Optional, Union, cast
-
-import fiona
-import fiona.transform
-import numpy as np
-import pyproj
-import rasterio
-import rasterio.merge
-import shapely
-import torch
-from rasterio.crs import CRS
-from rasterio.io import DatasetReader
-from rasterio.vrt import WarpedVRT
-from rtree.index import Index, Property
-from torch import Tensor
-from torch.utils.data import Dataset
-from torchvision.datasets import ImageFolder
 from torchvision.datasets.folder import default_loader as pil_loader
-from torchgeo.datasets import BoundingBox
 
 """this is an example of how to make a new geospatial(georefernced) dataset class using the geotorch RasterDataset class
 for refrence check the README
@@ -72,16 +47,3 @@ def plotCorrelationMatrix(dfe, graphWidth):
     plt.colorbar(corrMat)
     plt.title(f"Correlation Matrix for {filename}", fontsize=15)
     plt.show()
-
-
-dfe1 = pd.read_csv("archive\label_class_dict.csv")
-dfe1.dataframeName = "label_class_dict.csv"
-m = MC(r"C:\Users\abbas\OneDrive\Desktop\CNRS\geotorch\archive")
-bb = BoundingBox(
-    225986.4361739957, 245486.43617399564, 883271.0247782532, 917771.025, 0, 9
-)
-
-
-a = m.__getitem__(bb)
-plotCorrelationMatrix(dfe=dfe1, graphWidth=10)
-print()
