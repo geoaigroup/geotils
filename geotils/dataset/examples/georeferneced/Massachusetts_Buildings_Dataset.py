@@ -1,9 +1,6 @@
 from torchgeo.datasets import geo
-from torchgeo.datasets.geo import GeoDataset
+
 import matplotlib.pyplot as plt
-
-
-import numpy as np
 
 
 from torchvision.datasets.folder import default_loader as pil_loader

@@ -62,6 +62,6 @@ class vlm(geo.NonGeoDataset):
             return tensor
 
 
-testVQA = vlm(r"C:\Users\abbas\OneDrive\Desktop\CNRS\geotorch")
-
-print(testVQA.__getitem__(0))
+# testVQA = vlm(r"C:\Users\abbas\OneDrive\Desktop\CNRS\geotorch")
+#
+# print(testVQA.__getitem__(0))

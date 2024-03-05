@@ -42,7 +42,7 @@ class vlm(geo.NonGeoDataset):
     def __getitem__(self, index: int) -> dict[str, Any]:
         directory = os.path.join(self.root, "Images_LR")
         sample: dict[str, Any] = {"image": self._load_image(directory, index)}
-        features = {"answers": self.answers, "questions": self.questions}
+        features = {"answers": self.answers[0], "questions": self.questions[0]}
         sample.update(features)
 
         if self.transforms is not None:
@@ -60,8 +60,3 @@ class vlm(geo.NonGeoDataset):
             tensor = tensor.permute((2, 0, 1))
             tensor = tensor.float()
             return tensor
-
-
-testVQA = vlm(r"C:\Users\abbas\OneDrive\Desktop\CNRS\geotorch")
-
-print(testVQA.__getitem__(0))
