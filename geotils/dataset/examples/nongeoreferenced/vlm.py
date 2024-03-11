@@ -61,7 +61,3 @@ class vlm(geo.NonGeoDataset):
             tensor = tensor.float()
             return tensor
 
-
-# testVQA = vlm(r"C:\Users\abbas\OneDrive\Desktop\CNRS\geotorch")
-#
-# print(testVQA.__getitem__(0))

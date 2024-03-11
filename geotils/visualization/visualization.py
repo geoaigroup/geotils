@@ -4,7 +4,7 @@ import random
 
 class Visualization(object):
     """enter an image and mask to be able to modify them
-    the img and mask will  be themselves modified and a modified version will be returned after every call
+    all methods are static
     """
 
     """This method converts the mask to an RGB representation.

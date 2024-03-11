@@ -1,0 +1,105 @@
+<PAMDataset>
+  <Metadata domain="IMAGE_STRUCTURE">
+    <MDI key="COMPRESSION">JPEG</MDI>
+    <MDI key="INTERLEAVE">PIXEL</MDI>
+    <MDI key="SOURCE_COLOR_SPACE">YCbCr</MDI>
+  </Metadata>
+  <Metadata>
+    <MDI key="EXIF_ApertureValue">(2.27)</MDI>
+    <MDI key="EXIF_ColorSpace">1</MDI>
+    <MDI key="EXIF_ComponentsConfiguration">0x00 0x03 0x02 0x01</MDI>
+    <MDI key="EXIF_CompressedBitsPerPixel">(3.18718)</MDI>
+    <MDI key="EXIF_Contrast">0</MDI>
+    <MDI key="EXIF_CustomRendered">0</MDI>
+    <MDI key="EXIF_DateTime">2017:09:03 14:47:07</MDI>
+    <MDI key="EXIF_DateTimeDigitized">2017:09:03 14:47:07</MDI>
+    <MDI key="EXIF_DateTimeOriginal">2017:09:03 14:47:07</MDI>
+    <MDI key="EXIF_DeviceSettingDescription">0x00 0x00 0x00 0x00</MDI>
+    <MDI key="EXIF_DigitalZoomRatio">(0)</MDI>
+    <MDI key="EXIF_ExifVersion">0230</MDI>
+    <MDI key="EXIF_ExposureBiasValue">(0)</MDI>
+    <MDI key="EXIF_ExposureIndex">(0)</MDI>
+    <MDI key="EXIF_ExposureMode">1</MDI>
+    <MDI key="EXIF_ExposureProgram">1</MDI>
+    <MDI key="EXIF_ExposureTime">(0.001)</MDI>
+    <MDI key="EXIF_FileSource">0x03</MDI>
+    <MDI key="EXIF_Flash">32</MDI>
+    <MDI key="EXIF_FlashpixVersion">0010</MDI>
+    <MDI key="EXIF_FNumber">(2.2)</MDI>
+    <MDI key="EXIF_FocalLength">(4.7)</MDI>
+    <MDI key="EXIF_FocalLengthIn35mmFilm">26</MDI>
+    <MDI key="EXIF_GainControl">0</MDI>
+    <MDI key="EXIF_GPSAltitude">(35.725)</MDI>
+    <MDI key="EXIF_GPSAltitudeRef">0x00</MDI>
+    <MDI key="EXIF_GPSLatitude">(29) (36) (48.273)</MDI>
+    <MDI key="EXIF_GPSLatitudeRef">N</MDI>
+    <MDI key="EXIF_GPSLongitude">(95) (44) (21.8761)</MDI>
+    <MDI key="EXIF_GPSLongitudeRef">W</MDI>
+    <MDI key="EXIF_GPSVersionID">0x03 0x02 0x00 0x00</MDI>
+    <MDI key="EXIF_ImageDescription">DCIM\100MEDIA\DJI_0257.JPG</MDI>
+    <MDI key="EXIF_Interoperability_Index">R98</MDI>
+    <MDI key="EXIF_Interoperability_Version">0x30 0x31 0x30 0x30</MDI>
+    <MDI key="EXIF_ISOSpeedRatings">100</MDI>
+    <MDI key="EXIF_LightSource">0</MDI>
+    <MDI key="EXIF_Make">DJI</MDI>
+    <MDI key="EXIF_MakerNote"></MDI>
+    <MDI key="EXIF_MaxApertureValue">(2.27)</MDI>
+    <MDI key="EXIF_MeteringMode">0</MDI>
+    <MDI key="EXIF_Model">FC220</MDI>
+    <MDI key="EXIF_Orientation">1</MDI>
+    <MDI key="EXIF_PixelXDimension">4000</MDI>
+    <MDI key="EXIF_PixelYDimension">3000</MDI>
+    <MDI key="EXIF_ResolutionUnit">2</MDI>
+    <MDI key="EXIF_Saturation">0</MDI>
+    <MDI key="EXIF_SceneCaptureType">0</MDI>
+    <MDI key="EXIF_SceneType">0x00</MDI>
+    <MDI key="EXIF_Sharpness">2</MDI>
+    <MDI key="EXIF_ShutterSpeedValue">(9.965)</MDI>
+    <MDI key="EXIF_Software">v02.03.5643</MDI>
+    <MDI key="EXIF_SubjectDistance">(0)</MDI>
+    <MDI key="EXIF_SubjectDistanceRange">0</MDI>
+    <MDI key="EXIF_WhiteBalance">1</MDI>
+    <MDI key="EXIF_XResolution">(72)</MDI>
+    <MDI key="EXIF_YCbCrPositioning">1</MDI>
+    <MDI key="EXIF_YResolution">(72)</MDI>
+  </Metadata>
+  <PAMRasterBand band="1">
+    <Metadata domain="IMAGE_STRUCTURE">
+      <MDI key="COMPRESSION">JPEG</MDI>
+    </Metadata>
+    <Metadata>
+      <MDI key="STATISTICS_APPROXIMATE">YES</MDI>
+      <MDI key="STATISTICS_MAXIMUM">255</MDI>
+      <MDI key="STATISTICS_MEAN">91.511302083333</MDI>
+      <MDI key="STATISTICS_MINIMUM">0</MDI>
+      <MDI key="STATISTICS_STDDEV">43.973189954368</MDI>
+      <MDI key="STATISTICS_VALID_PERCENT">100</MDI>
+    </Metadata>
+  </PAMRasterBand>
+  <PAMRasterBand band="2">
+    <Metadata domain="IMAGE_STRUCTURE">
+      <MDI key="COMPRESSION">JPEG</MDI>
+    </Metadata>
+    <Metadata>
+      <MDI key="STATISTICS_APPROXIMATE">YES</MDI>
+      <MDI key="STATISTICS_MAXIMUM">255</MDI>
+      <MDI key="STATISTICS_MEAN">98.293177083333</MDI>
+      <MDI key="STATISTICS_MINIMUM">2</MDI>
+      <MDI key="STATISTICS_STDDEV">41.132813787954</MDI>
+      <MDI key="STATISTICS_VALID_PERCENT">100</MDI>
+    </Metadata>
+  </PAMRasterBand>
+  <PAMRasterBand band="3">
+    <Metadata domain="IMAGE_STRUCTURE">
+      <MDI key="COMPRESSION">JPEG</MDI>
+    </Metadata>
+    <Metadata>
+      <MDI key="STATISTICS_APPROXIMATE">YES</MDI>
+      <MDI key="STATISTICS_MAXIMUM">255</MDI>
+      <MDI key="STATISTICS_MEAN">78.984791666667</MDI>
+      <MDI key="STATISTICS_MINIMUM">0</MDI>
+      <MDI key="STATISTICS_STDDEV">50.694550762779</MDI>
+      <MDI key="STATISTICS_VALID_PERCENT">100</MDI>
+    </Metadata>
+  </PAMRasterBand>
+</PAMDataset>
