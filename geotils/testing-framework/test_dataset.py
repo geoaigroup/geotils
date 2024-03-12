@@ -10,9 +10,7 @@ from torchgeo.datasets import BoundingBox
 
 class TestGetMethod(unittest.TestCase):
     def test_vlm(self):
-        v = vlm(
-            r"C:\Users\abbas\OneDrive\Documents\GitHub\geotils\geotils\dataset\testing\data\vlm"
-        )
+        v = vlm(r"\geotils\geotils\dataset\testing\data\vlm")
         ans = {
             "id": 0,
             "date_added": 1543570371.6343634,
@@ -301,9 +299,7 @@ class TestGetMethod(unittest.TestCase):
         bb = BoundingBox(
             225986.4361739957, 245486.43617399564, 883271.0247782532, 917771.025, 0, 9
         )
-        mc = MassachusettsBuildingsDataset(
-            r"C:\Users\abbas\OneDrive\Desktop\CNRS\geotorch\archive"
-        )
+        mc = MassachusettsBuildingsDataset(r"\geotils\geotils\dataset\data\archive")
         to_test = mc.__getitem__(bb)["image"].data[0][20000][0:30].numpy().all()
         self.assertEqual(
             to_test,
