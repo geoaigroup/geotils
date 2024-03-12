@@ -1,4 +1,5 @@
 import unittest
+from data_processing.masker import Masker
 from visualization.Visualization import Visualization
 from PIL import Image
 import numpy as np

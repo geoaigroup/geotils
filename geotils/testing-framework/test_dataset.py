@@ -304,7 +304,7 @@ class TestGetMethod(unittest.TestCase):
         mc = MassachusettsBuildingsDataset(
             r"C:\Users\abbas\OneDrive\Desktop\CNRS\geotorch\archive"
         )
-        to_test = mc.__getitem__(bb)["mask"].data[0][20000][0:30].numpy().all()
+        to_test = mc.__getitem__(bb)["image"].data[0][20000][0:30].numpy().all()
         self.assertEqual(
             to_test,
             tensor(

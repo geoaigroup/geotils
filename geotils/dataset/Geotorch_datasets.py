@@ -21,14 +21,14 @@ from torchgeo.datasets import advance
 from torchgeo.datasets import agb_live_woody_density
 from torchgeo.datasets import benin_cashews
 from torchgeo.datasets import (
-    cdf,
+    # cdf,
     cdl,
     chesapeake,
     cloud_cover,
     cms_mangrove_canopy,
     cyclone,
     cowc,
-    cv4a_kenya_crop_typec,
+    # cv4a_kenya_crop_typec,
     cbf,
     dfc2022,
     deepglobelandcover,
