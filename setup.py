@@ -22,7 +22,6 @@ setuptools.setup(
         'albumentations==1.3.1',
         'fiona==1.9.5',
         'matplotlib==3.8.0',
-        'matplotlib-inline @ file:///opt/conda/conda-bld/matplotlib-inline_1662014470464/work',
         'numpy==1.26.1',
         'opencv-python==4.8.1.78',
         'opencv-python-headless==4.8.1.78',
