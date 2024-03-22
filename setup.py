@@ -5,13 +5,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="geotils",
-    version="0.0.2",
-    author="Example Author",
-    author_email="author@example.com",
+    version="0.0.20",
+    author="GEOAI group",
+    author_email="geotils@geogroup.ai",
     description="A small example package",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/pypa/sampleproject",
+    url="https://github.com/geoaigroup/geotils",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
