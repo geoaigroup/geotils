@@ -1,1 +1,1 @@
-# geotils
+# geotils library
