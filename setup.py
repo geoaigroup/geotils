@@ -29,7 +29,7 @@ setuptools.setup(
         'Pillow==10.1.0',
         'scipy==1.11.3',
         'seaborn==0.13.1',
-        'segment-anything @ git+https://github.com/facebookresearch/segment-anything.git@6fdee8f2727f4506cfbbe553e23b895e27956588',
+        'segment-anything @ git+ssh://git@github.com/facebookresearch/segment-anything.git',
         'shapely==2.0.2',
         'tifffile==2023.9.26',
         'timm==0.9.2',
