@@ -1,12 +1,30 @@
-from Geotorch_datasets import geo
+import torch
+import sys
+
+
+sys.path.append("C:\\Users\\abbas\\OneDrive\\Documents\\GitHub\\geotils\\geotils")
+from dataset.Geotorch_datasets import geo
 from torchgeo.datasets import BoundingBox
-from examples.georeferneced.Massachusetts_Buildings_Dataset import (
-    MassachusettsBuildingsDataset,
-)
+
+
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License.
+
+"""Base classes for all :mod:`torchgeo` datasets."""
+import os
+import re
+from typing import Any, cast
+
+import fiona.transform
+import numpy as np
+import rasterio
+import rasterio.merge
+import torch
+from torch import Tensor
 
 
 class GeotilsRasterDataset(geo.RasterDataset):
-    def __getitem__(self, query: BoundingBox):
+    def __getitem__(self, query: BoundingBox, mask_extension=".tiff") -> dict[str, Any]:
         """Retrieve image/mask and metadata indexed by query.
 
         Args:
@@ -59,29 +77,58 @@ class GeotilsRasterDataset(geo.RasterDataset):
 
             for path in filepaths:
                 maskpaths.append(
-                    os.path.join(
-                        (os.path.split(path)[0] + "_labels"), os.path.split(path)[1]
+                    (
+                        os.path.join(
+                            (os.path.split(path)[0] + "_labels"),
+                            os.path.split(path)[1][0:-5] + mask_extension,
+                        ),
+                        path,
                     )
                 )
-            data = self._merge_files(filepaths, query, self.band_indexes)
+            masks = []
+            for filepath in maskpaths:
+                original = filepath[1]
+                target = filepath[0]
+                with rasterio.open(original) as src:
+                    source_profile = src.profile
+                    source_transform = src.transform
+                    source_crs = self.crs
+                    src.close()
+
+                dst = rasterio.open(target, "r+")
+                # Step 3: Assign geospatial information from source to target
+                dst.crs = source_crs
+                dst.transform = source_transform
+                # Step 4: Save the modified target raster
+                # dst.write(dst.read())
+
+                masks.append(dst)
+
+                # mask_data =np.array(Image.open(filepath))
+                # reproj_mask_data = np.empty_like(mask_data, dtype=np.uint8)
+                # rasterio.warp.reproject(
+                # source=mask_data,
+                # destination=reproj_mask_data,
+
+                # dst_crs=self._crs,)
+                # masks.append(reproj_mask_data)
+            # data = self._merge_files(maskpaths, query, self.band_indexes)
+
+            # bounds = (query.minx, query.miny, query.maxx, query.maxy)
+            # dest, _ = rasterio.merge.merge(masks, bounds, self.res, indexes=self.band_indexes)
+            bounds = (query.minx, query.miny, query.maxx, query.maxy)
+            dest, _ = rasterio.merge.merge(
+                masks, bounds, self.res, indexes=self.band_indexes
+            )
+            # fix numpy dtypes which are not supported by pytorch tensors
+            if dest.dtype == np.uint16:
+                dest = dest.astype(np.int32)
+            elif dest.dtype == np.uint32:
+                dest = dest.astype(np.int64)
+            data = torch.tensor(dest)
             sample["mask"] = data
 
         if self.transforms is not None:
             sample = self.transforms(sample)
 
         return sample
-
-
-def test_Massachusetts_building():
-    bb = BoundingBox(
-        225986.4361739957, 245486.43617399564, 883271.0247782532, 917771.025, 0, 9
-    )
-    mc = MassachusettsBuildingsDataset(
-        r"C:\Users\abbas\OneDrive\Desktop\CNRS\geotorch\archive"
-    )
-    to_test = mc.__getitem__(bb, mask_extension=".tif")
-
-    print()
-
-
-test_Massachusetts_building()

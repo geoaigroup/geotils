@@ -1,16 +1,25 @@
 import unittest
 
+from numpy import array
 from torch import tensor
 import torch
-from Massachusetts_Buildings_Dataset import MassachusettsBuildingsDataset
+import sys
 
-from vlm import vlm
+
+sys.path.append("C:\\Users\\abbas\\OneDrive\\Documents\\GitHub\\geotils\\geotils")
+from dataset.examples.georeferneced.Massachusetts_Buildings_Dataset import (
+    MassachusettsBuildingsDataset,
+)
+
+from dataset.examples.nongeoreferenced.vlm import vlm
 from torchgeo.datasets import BoundingBox
 
 
 class TestGetMethod(unittest.TestCase):
     def test_vlm(self):
-        v = vlm(r"\geotils\geotils\dataset\testing\data\vlm")
+        v = vlm(
+            r"C:\Users\abbas\OneDrive\Documents\GitHub\geotils\geotils\testing-framework\assets\data\vlm"
+        )
         ans = {
             "id": 0,
             "date_added": 1543570371.6343634,
@@ -291,55 +300,23 @@ class TestGetMethod(unittest.TestCase):
         )
         item = v.__getitem__(0)
         self.assertEqual(item["image"].data[0][0].all(), t.all())
-        self.assertEqual(item["answers"], ans)
-        self.assertEqual(item["questions"], q)
+        self.assertEqual(item["answers"][0], ans)
+        self.assertEqual(item["questions"][0], q)
 
     def test_Massachusetts_building(self):
 
         bb = BoundingBox(
             225986.4361739957, 245486.43617399564, 883271.0247782532, 917771.025, 0, 9
         )
-        mc = MassachusettsBuildingsDataset(r"\geotils\geotils\dataset\data\archive")
-        to_test = mc.__getitem__(bb)["image"].data[0][20000][0:30].numpy().all()
+        mc = MassachusettsBuildingsDataset(
+            r"C:\Users\abbas\OneDrive\Documents\GitHub\geotils\geotils\testing-framework\assets\data\archive"
+        )
+        to_test = to_test = torch.nonzero(
+            mc.__getitem__(bb, mask_extension=".tif")["mask"]
+        ).numpy()[0]
         self.assertEqual(
-            to_test,
-            tensor(
-                [
-                    143,
-                    118,
-                    146,
-                    172,
-                    184,
-                    155,
-                    26,
-                    61,
-                    186,
-                    17,
-                    6,
-                    44,
-                    65,
-                    73,
-                    65,
-                    70,
-                    61,
-                    70,
-                    113,
-                    137,
-                    124,
-                    120,
-                    84,
-                    58,
-                    57,
-                    94,
-                    67,
-                    43,
-                    81,
-                    103,
-                ],
-                dtype=torch.uint8,
-            )
-            .numpy()
-            .all(),
+            to_test.all(),
+            array([0, 9000, 7563]).all(),
         )
 
 

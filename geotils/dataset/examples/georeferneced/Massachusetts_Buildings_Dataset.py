@@ -1,8 +1,8 @@
-from torchgeo.datasets import geo
-
 import matplotlib.pyplot as plt
+import sys
 
-
+sys.path.append("C:\\Users\\abbas\\OneDrive\\Documents\\GitHub\\geotils\\geotils")
+from dataset.Geobase import GeotilsRasterDataset
 from torchvision.datasets.folder import default_loader as pil_loader
 
 """this is an example of how to make a new geospatial(georefernced) dataset class using the geotorch RasterDataset class
@@ -11,7 +11,7 @@ the class implemented here is Massachusetts Buildings Dataset
 """
 
 
-class MassachusettsBuildingsDataset(geo.RasterDataset):
+class MassachusettsBuildingsDataset(GeotilsRasterDataset):
     filename_glob = "*_15.tiff"
     is_image = False
     separate_files = False
