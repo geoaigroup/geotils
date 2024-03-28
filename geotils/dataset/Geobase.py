@@ -6,15 +6,12 @@ from dataset.Geotorch_datasets import geo
 from torchgeo.datasets import BoundingBox
 
 
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT License.
-
-"""Base classes for all :mod:`torchgeo` datasets."""
+"""Base class for all geospatial datasets."""
 import os
 import re
 from typing import Any, cast
 
-import fiona.transform
+
 import numpy as np
 import rasterio
 import rasterio.merge
@@ -95,26 +92,12 @@ class GeotilsRasterDataset(geo.RasterDataset):
                     src.close()
 
                 dst = rasterio.open(target, "r+")
-                # Step 3: Assign geospatial information from source to target
+
                 dst.crs = source_crs
                 dst.transform = source_transform
-                # Step 4: Save the modified target raster
-                # dst.write(dst.read())
 
                 masks.append(dst)
 
-                # mask_data =np.array(Image.open(filepath))
-                # reproj_mask_data = np.empty_like(mask_data, dtype=np.uint8)
-                # rasterio.warp.reproject(
-                # source=mask_data,
-                # destination=reproj_mask_data,
-
-                # dst_crs=self._crs,)
-                # masks.append(reproj_mask_data)
-            # data = self._merge_files(maskpaths, query, self.band_indexes)
-
-            # bounds = (query.minx, query.miny, query.maxx, query.maxy)
-            # dest, _ = rasterio.merge.merge(masks, bounds, self.res, indexes=self.band_indexes)
             bounds = (query.minx, query.miny, query.maxx, query.maxy)
             dest, _ = rasterio.merge.merge(
                 masks, bounds, self.res, indexes=self.band_indexes
