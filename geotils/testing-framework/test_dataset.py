@@ -6,7 +6,7 @@ import torch
 import sys
 
 
-sys.path.append("C:\\Users\\abbas\\OneDrive\\Documents\\GitHub\\geotils\\geotils")
+sys.path.append("../")
 from dataset.examples.georeferneced.Massachusetts_Buildings_Dataset import (
     MassachusettsBuildingsDataset,
 )

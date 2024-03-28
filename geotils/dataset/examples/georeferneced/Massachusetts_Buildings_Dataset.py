@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import sys
+import os.path as path
 
-sys.path.append("C:\\Users\\abbas\\OneDrive\\Documents\\GitHub\\geotils\\geotils")
+sys.path.append(path.abspath(path.join(__file__, "..", "..")))
 from dataset.Geobase import GeotilsRasterDataset
 from torchvision.datasets.folder import default_loader as pil_loader
 

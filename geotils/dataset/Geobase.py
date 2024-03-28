@@ -2,7 +2,6 @@ import torch
 import sys
 
 
-sys.path.append("C:\\Users\\abbas\\OneDrive\\Documents\\GitHub\\geotils\\geotils")
 from dataset.Geotorch_datasets import geo
 from torchgeo.datasets import BoundingBox
 
