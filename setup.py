@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="geotils",
-    version="0.0.20",
+    version="0.0.21",
     author="GEOAI group",
     author_email="geotils@geogroup.ai",
     description="A small example package",
