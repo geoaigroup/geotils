@@ -6,6 +6,8 @@ name: Testing automation
 on:
   pull_request:
     branches: ["main"]
+  push:
+    branches: ["main"]
 
 jobs:
   test:
@@ -17,7 +19,7 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          pip install numpy geopandas shapely scikit-learn tabulate timm torchvision rasterio scikit-image matplotlib affine opencv-python simplification imantics
+          pip install numpy geopandas shapely scikit-learn tabulate timm torchvision rasterio scikit-image matplotlib affine opencv-python simplification imantics torchgeo
 
       - name: Run unit tests
         working-directory: geotils/testing-framework
