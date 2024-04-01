@@ -1,2 +1,0 @@
-pip install segmentation-models-pytorch
-pip install albumentations
