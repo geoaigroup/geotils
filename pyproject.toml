@@ -33,7 +33,7 @@ maintainers = [
   {name = "Ali Ghandour", email = "aghandour@cnrs.edu.lb"},
 ]
 description = "geotils by GEOAI group"
-readme = {file = "README.md"}
+readme = "README.md"
 license = {file = "LICENSE.txt"}
 keywords = ["geotils", "geospatial", "earth observation"]
 classifiers = [
