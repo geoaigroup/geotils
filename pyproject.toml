@@ -43,9 +43,6 @@ classifiers = [
   "Programming Language :: Python",
 ]
 
-[tool.versioningit.next-version]
-method = "minor-release"
-
 [tool.versioningit.format]
 distance = "{base_version}.post{distance}+{vcs}{rev}"
 dirty = "{base_version}+d{build_date:%Y%m%d}"
