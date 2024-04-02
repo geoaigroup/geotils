@@ -25,10 +25,10 @@ dependencies = [
 ]
 requires-python = ">=3.10"
 authors = [
-  {name = "GEOAI group", email = "info@geogroup.ai"},
+  {name = "GEOAI group", email = "geotils@geogroup.ai"},
 ]
 maintainers = [
-  {name = "GEOAI group", email = "info@geogroup.ai"},
+  {name = "GEOAI group", email = "geotils@geogroup.ai"},
 ]
 description = "geotils by GEOAI group"
 readme = "README.md"
