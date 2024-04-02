@@ -32,7 +32,7 @@ maintainers = [
   {name = "Ali Ghandour", email = "aghandour@cnrs.edu.lb"},
 ]
 description = "geotils by GEOAI group"
-readme = "README.md"
+readme = {file = "README.md"}
 license = {file = "LICENSE.txt"}
 keywords = ["geotils", "geospatial", "earth observation"]
 classifiers = [
@@ -43,8 +43,8 @@ classifiers = [
   "Programming Language :: Python",
 ]
 
-[tool.versioningit]
-
+[tool.versioningit.next-version]
+method = "minor-release"
 
 [project.urls]
 Homepage = "https://geogroup.ai/"
