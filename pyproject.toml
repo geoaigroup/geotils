@@ -22,7 +22,6 @@ dependencies = [
         'timm==0.9.2',
         'torchvision==0.16.0',
         'tqdm==4.66.1',
-		'versioningit',
 ]
 requires-python = ">=3.10"
 authors = [
@@ -43,10 +42,8 @@ classifiers = [
   "Programming Language :: Python",
 ]
 
-[tool.versioningit.format]
-distance = "{base_version}.post{distance}+{vcs}{rev}"
-dirty = "{base_version}+d{build_date:%Y%m%d}"
-distance-dirty = "{base_version}.post{distance}+{vcs}{rev}.d{build_date:%Y%m%d}"
+[tool.setuptools.dynamic]
+version = {attr = "geotils.__version__"}
 
 [project.urls]
 Homepage = "https://geogroup.ai/"
