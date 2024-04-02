@@ -25,14 +25,14 @@ dependencies = [
 ]
 requires-python = ">=3.10"
 authors = [
-  {name = "Ali Ghandour", email = "aghandour@cnrs.edu.lb"},
+  {name = "GEOAI group", email = "info@geogroup.ai"},
 ]
 maintainers = [
-  {name = "Ali Ghandour", email = "aghandour@cnrs.edu.lb"},
+  {name = "GEOAI group", email = "info@geogroup.ai"},
 ]
 description = "geotils by GEOAI group"
 readme = "README.md"
-license = {file = "LICENSE.txt"}
+license = {file = "LICENSE"}
 keywords = ["geotils", "geospatial", "earth observation"]
 classifiers = [
   "Development Status :: 3 - Alpha",
