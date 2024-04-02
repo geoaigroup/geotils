@@ -22,8 +22,9 @@ dependencies = [
         'timm==0.9.2',
         'torchvision==0.16.0',
         'tqdm==4.66.1',
+		 "versioningit",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 authors = [
   {name = "Ali Ghandour", email = "aghandour@cnrs.edu.lb"},
 ]
@@ -42,15 +43,14 @@ classifiers = [
   "Programming Language :: Python",
 ]
 
-#[project.optional-dependencies]
-#gui = ["PyQt5"]
-#cli = [
-#  "rich",
-#  "click",
-#]
-
 [tool.setuptools.dynamic]
 version = {attr = "geotils.__version__"}
+
+[tool.versioningit]
+# Use the "git" method for the vcs step with no parameters:
+vcs = "git"
+# Use a custom function for the next-version step with no parameters:
+next-version = { module = "geotils.module", value = "my_next_version" }
 
 [project.urls]
 Homepage = "https://geogroup.ai/"
@@ -61,9 +61,3 @@ Changelog = "https://github.com/geoaigroup/geotils/blob/master/CHANGELOG.md"
 
 [project.scripts]
 geotils = "geotils.module:function"
-
-#[project.gui-scripts]
-#spam-gui = "spam:main_gui"
-
-#[project.entry-points."spam.magical"]
-#tomatoes = "spam:main_tomatoes"
