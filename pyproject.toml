@@ -22,7 +22,8 @@ dependencies = [
         'timm==0.9.2',
         'torchvision==0.16.0',
         'tqdm==4.66.1',
-		'versioningit',
+		#'versioningit',
+		'python-semantic-release',
 ]
 requires-python = ">=3.10"
 authors = [
@@ -43,8 +44,11 @@ classifiers = [
   "Programming Language :: Python",
 ]
 
-[tool.versioningit.next-version]
-method = "minor-release"
+#[tool.versioningit.next-version]
+#method = "minor-release"
+
+[tool.semantic_release]
+version_variable = "pyproject.toml:version"
 
 [project.urls]
 Homepage = "https://geogroup.ai/"
