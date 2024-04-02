@@ -48,7 +48,7 @@ classifiers = [
 #method = "minor-release"
 
 [tool.semantic_release]
-version_variable = "pyproject.toml:version"
+
 
 [project.urls]
 Homepage = "https://geogroup.ai/"
