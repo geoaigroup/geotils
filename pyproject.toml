@@ -22,7 +22,7 @@ dependencies = [
         'timm==0.9.2',
         'torchvision==0.16.0',
         'tqdm==4.66.1',
-		 "python-semantic-release",
+		'versioningit',
 ]
 requires-python = ">=3.10"
 authors = [
@@ -43,12 +43,18 @@ classifiers = [
   "Programming Language :: Python",
 ]
 
-[tool.setuptools.dynamic]
-version = {attr = "geotils.__version__"}
+[tool.versioningit.format]
+# Format used when there have been commits since the most recent tag:
+distance = "{base_version}.post{distance}+{vcs}{rev}"
+# Example formatted version: 1.2.3.post42+ge174a1f
 
-#use PSR pkg: https://python-semantic-release.readthedocs.io/en/latest/commands.html for auto bump
-[tool.semantic_release]
-version_variable = "pyproject.toml:version"
+# Format used when there are uncommitted changes:
+dirty = "{base_version}+d{build_date:%Y%m%d}"
+# Example formatted version: 1.2.3+d20230922
+
+# Format used when there are both commits and uncommitted changes:
+distance-dirty = "{base_version}.post{distance}+{vcs}{rev}.d{build_date:%Y%m%d}"
+# Example formatted version: 1.2.3.post42+ge174a1f.d20230922
 
 [project.urls]
 Homepage = "https://geogroup.ai/"
