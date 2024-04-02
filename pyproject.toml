@@ -32,7 +32,7 @@ maintainers = [
 ]
 description = "geotils by GEOAI group"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = "LGPL-3.0-only"
 keywords = ["geotils", "geospatial", "earth observation"]
 classifiers = [
   "Development Status :: 3 - Alpha",
