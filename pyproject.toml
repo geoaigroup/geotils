@@ -46,6 +46,7 @@ classifiers = [
 [tool.setuptools.dynamic]
 version = {attr = "geotils.__version__"}
 
+#use PSR pkg: https://python-semantic-release.readthedocs.io/en/latest/commands.html for auto bump
 [tool.semantic_release]
 version_variable = "pyproject.toml:version"
 
