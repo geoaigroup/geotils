@@ -1,5 +1,8 @@
 [build-system]
-requires = ["setuptools >= 61.0"]
+requires = [
+    "setuptools >= 61.0",
+    "versioningit",
+]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -22,6 +25,7 @@ dependencies = [
         'timm==0.9.2',
         'torchvision==0.16.0',
         'tqdm==4.66.1',
+		 'versioningit',
 ]
 requires-python = ">=3.10"
 authors = [
@@ -42,8 +46,11 @@ classifiers = [
   "Programming Language :: Python",
 ]
 
-[tool.setuptools.dynamic]
-version = {attr = "geotils.__version__"}
+#[tool.setuptools.dynamic]
+#version = {attr = "geotils.__version__"}
+
+[tool.versioningit]
+
 
 [project.urls]
 Homepage = "https://geogroup.ai/"
