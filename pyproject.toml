@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "setuptools >= 61.0",
-    "versioningit",
+    #"versioningit",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -47,14 +47,6 @@ classifiers = [
 
 [tool.setuptools.dynamic]
 version = {attr = "geotils.__version__"}
-
-#
-[tool.versioningit]
-
-[tool.versioningit.vcs]
-# The method key:
-method = "git"  # <- The method nam
-
 
 [project.urls]
 Homepage = "https://geogroup.ai/"
