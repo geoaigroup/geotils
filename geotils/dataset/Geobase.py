@@ -63,7 +63,7 @@ class GeotilsRasterDataset(geo.RasterDataset):
 
         sample = {"crs": self.crs, "bbox": query}
 
-        data = data.to(self.dtype)
+        # data = data.to(self.dtype)
         if self.is_image:
             sample["image"] = data
         else:
