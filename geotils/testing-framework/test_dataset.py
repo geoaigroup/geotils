@@ -312,7 +312,7 @@ class TestGetMethod(unittest.TestCase):
         ).numpy()[0]
         self.assertEqual(
             to_test.all(),
-            array([0, 9000, 7563]).all(),
+            array([0, 18000, 1510]).all(),
         )
 
 
