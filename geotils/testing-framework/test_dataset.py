@@ -17,7 +17,7 @@ from torchgeo.datasets import BoundingBox
 
 class TestGetMethod(unittest.TestCase):
     def test_vlm(self):
-        v = vlm(r"\assets\data\vlm")
+        v = vlm("assets/data/vlm")
         ans = {
             "id": 0,
             "date_added": 1543570371.6343634,
@@ -306,7 +306,7 @@ class TestGetMethod(unittest.TestCase):
         bb = BoundingBox(
             225986.4361739957, 245486.43617399564, 883271.0247782532, 917771.025, 0, 9
         )
-        mc = MassachusettsBuildingsDataset(r"\assets\data\archive")
+        mc = MassachusettsBuildingsDataset("assets/data/archive")
         to_test = to_test = torch.nonzero(
             mc.__getitem__(bb, mask_extension=".tif")["mask"]
         ).numpy()[0]
