@@ -11,8 +11,8 @@ import random
 
 
 class TestVisualization(unittest.TestCase):
-    image_filename = r"C:\Users\abbas\OneDrive\Documents\GitHub\geotils\geotils\testing-framework\assets\image.png"
-    mask_filename = r"C:\Users\abbas\OneDrive\Documents\GitHub\geotils\geotils\testing-framework\assets\mask.png"
+    image_filename = r"testing-framework\assets\image.png"
+    mask_filename = r"testing-framework\assets\mask.png"
     im = Image.open(image_filename)
     image = np.array(im)
     ma = Image.open(mask_filename)
