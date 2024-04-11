@@ -45,8 +45,8 @@ classifiers = [
   "Programming Language :: Python",
 ]
 
-[tool.setuptools.dynamic]
-version = {attr = "geotils.__version__"}
+#[tool.setuptools.dynamic]
+#version = {attr = "geotils.__version__"}
 
 [tool.versioningit]
 
