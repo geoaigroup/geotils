@@ -51,7 +51,7 @@ classifiers = [
 [tool.versioningit]
 
 [tool.versioningit.format]
-distance = "{base_version}.post{distance}.{vcs}{rev}"
+distance = "{base_version}.post{distance}"
 
 [project.urls]
 Homepage = "https://geogroup.ai/"
