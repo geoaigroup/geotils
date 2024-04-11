@@ -48,6 +48,11 @@ classifiers = [
 [tool.setuptools.dynamic]
 version = {attr = "geotils.__version__"}
 
+[tool.versioningit]
+
+[tool.versioningit.format]
+distance = "{base_version}.post{distance}.{vcs}{rev}"
+
 [project.urls]
 Homepage = "https://geogroup.ai/"
 Documentation = "https://readthedocs.org/geotils"
