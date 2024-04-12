@@ -50,6 +50,7 @@ classifiers = [
 
 [tool.versioningit]
 
+#define "distance" format to be compatible with both PyPI and Test PyPI
 [tool.versioningit.format]
 distance = "{base_version}.post{distance}"
 
