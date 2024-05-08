@@ -4,12 +4,14 @@ import torch
 from torch.optim.optimizer import Optimizer
 from tabulate import tabulate
 from colorama import Fore, Back, Style
+from packaging import version 
 
-version_higher = ( torch.__version__ >= "1.5.0" )
+if torch.__version__:
+    version_higher = ( version.parse(torch.__version__) >= version.parse("1.5.0"))
 
 class AdaBelief(Optimizer):
     r"""Implements AdaBelief algorithm. Modified from Adam in PyTorch
-    Arguments:
+    Attributes:
         params (iterable): iterable of parameters to optimize or dicts defining
             parameter groups
         lr (float, optional): learning rate (default: 1e-3)
@@ -117,9 +119,10 @@ class AdaBelief(Optimizer):
 
     def step(self, closure=None):
         """Performs a single optimization step.
-        Arguments:
-            closure (callable, optional): A closure that reevaluates the model
-                and returns the loss.
+        Parameters
+        ----------
+        closure (callable, optional): A closure that reevaluates the model
+            and returns the loss.
         """
         loss = None
         if closure is not None:

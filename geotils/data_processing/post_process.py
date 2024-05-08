@@ -20,7 +20,7 @@ class PostProcessing():
         a semantic segmentation mask, particularly for building segmentation tasks.
         It leverages optional channels for predicting borders and spacing around buildings.
 
-        Args:
+        Parameters:
             pred (numpy.ndarray): Prediction mask with shape (height, width, channels).
             thresh (float, default=0.5): Threshold for considering pixels as part of the final segmentation.
             thresh_b (float, default=0.6): Threshold for considering pixels as borders between objects.
