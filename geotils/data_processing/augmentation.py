@@ -37,7 +37,7 @@ class TorchRandomRotate(nn.Module):
     Apply random rotation to input images and masks. In contrast to the implementation in the Kornia library, this will apply a rotation by
     different degrees to each element instead of rotating all images in batch by the same degree.
 
-    Args:
+    Attributes:
         degrees (tuple or list): Range of possible rotation angles.
         probability (float, default=1): Probability of applying the rotation.
         interpolation (InterpolationMode, default=BILINEAR): Interpolation mode for rotation.
@@ -118,7 +118,7 @@ class RandomMaskIgnore(nn.Module):
     RandomMaskIgnore class generates random masks within specified lengths with a given probability.
     It modifies the input mask tensor in-place, and the modified tensor is returned.
 
-    Args:
+    Attributes:
         min_length (int, default=50): Minimum length of the randomly generated bounding box.
         max_length (int, default=100): Maximum length of the randomly generated bounding box.
         proba (float, default=0.5): Probability of applying the random mask modification.
