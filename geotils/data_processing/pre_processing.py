@@ -16,7 +16,7 @@ import cv2
 from shapely.geometry import shape
 
 
-from utils import ratio_resize_pad
+from data_processing.data_processing_utils import ratio_resize_pad
 import rasterio
 from rasterio.features import shapes as rio_shapes
 from rasterio.enums import ColorInterp

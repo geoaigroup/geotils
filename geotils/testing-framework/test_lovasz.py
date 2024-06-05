@@ -5,7 +5,7 @@ from torch.autograd import Variable
 from torch.nn.modules.loss import _Loss
 import sys 
 sys.path.append('../')
-from ToBeChecked.losses.lovasz import BinaryLovaszLoss, LovaszLoss, _lovasz_hinge, _lovasz_softmax, _lovasz_softmax_flat, _flatten_binary_scores, _flatten_probas, _lovasz_grad, _lovasz_hinge_flat
+from losses.lovasz import BinaryLovaszLoss, LovaszLoss, _lovasz_hinge, _lovasz_softmax, _lovasz_softmax_flat, _flatten_binary_scores, _flatten_probas, _lovasz_grad, _lovasz_hinge_flat
 
 class TestLovaszLosses(unittest.TestCase):
 
