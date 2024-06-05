@@ -20,6 +20,15 @@ geotils.visualization.masking module
    :undoc-members:
    :show-inheritance:
 
+
+geotils.visualization.visualization module
+------------------------------------------
+
+.. automodule:: geotils.visualization.visualization
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

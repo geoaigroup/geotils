@@ -8,12 +8,14 @@ Subpackages
    :maxdepth: 4
 
    geotils.data_processing
-   geotils.dataset
+   geotils.datasets
+   geotils.evaluation
    geotils.logging
+   geotils.losses
+   geotils.models
    geotils.optimizers
    geotils.schedulers
    geotils.visualization
-   geotils.evaluation
 
 Module contents
 ---------------

@@ -9,10 +9,10 @@ from torchgeo.datasets import BoundingBox
 
 sys.path.append("../")
 
-from datasets_.examples.georeferneced.Massachusetts_Buildings_Dataset import (
+from datasets.examples.georeferneced.Massachusetts_Buildings_Dataset import (
     MassachusettsBuildingsDataset,
 )
-from datasets_.examples.nongeoreferenced.vlm import vlm
+from datasets.examples.nongeoreferenced.vlm import vlm
 
 
 

@@ -18,8 +18,7 @@ class BNReLU(nn.Sequential):
                          nn.ReLU())
 
 class SpatialGather_Module(nn.Module):
-    """
-        Aggregate the context features according to the initial 
+    r"""Aggregate the context features according to the initial 
         predicted probability distribution.
         Employ the soft-weighted method to aggregate the context.
     """
@@ -40,18 +39,25 @@ class SpatialGather_Module(nn.Module):
 
 
 class ObjectAttentionBlock2D(nn.Module):
-    '''
-    The basic implementation for object context block
-    Input:
+    r"""The basic implementation for object context block
+
+    Input: N X C X H X W
+
+    Parameters
+    ----------
+    in_channels : 
+        the dimension of the input feature map
+    key_channels : 
+        the dimension after the key/query transform
+    scale : 
+        choose the scale to downsample the input feature maps (save memory cost)
+    bn_type : 
+        specify the bn type
+
+    Returns
+    -------
         N X C X H X W
-    Parameters:
-        in_channels       : the dimension of the input feature map
-        key_channels      : the dimension after the key/query transform
-        scale             : choose the scale to downsample the input feature maps (save memory cost)
-        bn_type           : specify the bn type
-    Return:
-        N X C X H X W
-    '''
+    """
     def __init__(self, 
                  in_channels, 
                  key_channels,
@@ -117,8 +123,7 @@ class ObjectAttentionBlock2D(nn.Module):
 
 
 class SpatialOCR_Module(nn.Module):
-    """
-    Implementation of the OCR module:
+    r"""Implementation of the OCR module:
     We aggregate the global object representation to update the representation for each pixel.
     """
     def __init__(self, 
@@ -185,13 +190,3 @@ class OCR(nn.Module):
         context = self.ocr_gather_head(feats,probs)
         aug_feats = self.ocr_distri_head(feats,context)
         return aug_feats
-
-
-'''
-t = torch.rand((1,128,16,16)).cuda()
-m = OCR(128)
-m.eval()
-m.cuda()
-y = m(t)
-print(y.size())
-'''
