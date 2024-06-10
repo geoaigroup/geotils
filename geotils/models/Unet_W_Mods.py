@@ -14,9 +14,9 @@ from segmentation_models_pytorch.base import modules as md
 from segmentation_models_pytorch.decoders.unet.decoder import DecoderBlock,CenterBlock
 from segmentation_models_pytorch.encoders import get_encoder
 from segmentation_models_pytorch.base import SegmentationModel,SegmentationHead, ClassificationHead
-from ..models.ASPP import ASPP,DenseASPP
-from .RA_modules import Relational_Module
-from ..models.OCR import OCR
+from models.ASPP import ASPP,DenseASPP
+from models.RA_modules import Relational_Module
+from models.OCR import OCR
 #from torchviz import make_dot
 #8import matplotlib.pyplot as plt
 global mod_map,mod_types
@@ -70,7 +70,7 @@ class DecoderBlock1x(DecoderBlock):
         x = self.conv2(x)
         x = self.attention2(x)
         return x
-    
+   
 class UnetWMDecoder(nn.Module):
     def __init__(
             self,
@@ -173,11 +173,13 @@ class UnetWMDecoder(nn.Module):
             self.center = nn.Identity()
 
         # combine decoder keyword arguments
+        print("Skipping ", len(skip_channels))
         kwargs = dict(use_batchnorm=use_batchnorm, attention_type=attention_type)
         blocks = [
             DecoderBlock(in_ch, skip_ch, out_ch, **kwargs)
             for in_ch, skip_ch, out_ch in zip(in_channels, skip_channels, out_channels)
         ]
+        print("LENGTH IS ", len(blocks))
         if(n_blocks == 5 and self.os==16):
             blocks[0]=DecoderBlock1x(in_channels[0],skip_channels[0],out_channels[0])
         self.blocks = nn.ModuleList(blocks)
@@ -292,10 +294,7 @@ m = UnetWM(mod = 'dense_aspp',
 x = x.cuda(non_blocking = True)
 m.train()
 m.cuda()
-<<<<<<< HEAD
 y = m(x) 
-=======
 with autocast():y = m(x) 
->>>>>>> 9ae615f0dba35685db77246d00157d670e32ded4
 print(y.size())
 '''
