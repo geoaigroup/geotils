@@ -24,7 +24,7 @@ class Masker:
     ):
         r"""Initialize Masker object.
 
-        Parameters
+        Attributes
         ----------
         out_size : Tuple[int, int]
             Output size of the mask. Default is (1024, 1024).

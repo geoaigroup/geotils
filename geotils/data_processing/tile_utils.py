@@ -14,23 +14,18 @@ from supermercado.burntiles import burn
 from tqdm import tqdm,trange
 from math import ceil
 from pystac import (Catalog)
-import argparse
-from tqdm import trange,tqdm
 import geopandas as gp
 from shapely.geometry import Polygon
-from rasterio.coords import BoundingBox
 from rasterio import windows
-from rasterio import warp
+from rasterio.windows import Window
 from rasterio.transform import from_bounds
 from PIL import Image,ImageDraw
-from skimage.morphology import dilation, square, watershed
-import solaris as sol
-from simplification.cutil import simplify_coords_vwp
+from skimage.morphology import dilation, square
+from skimage.segmentation import watershed
+# import solaris as sol
 from imantics import Mask
 import numpy as np
 import rasterio
-from matplotlib import pyplot as plt
-from rasterio.windows import Window
 from typing import List, Tuple
 
 global our_crs
@@ -208,55 +203,6 @@ def to_index(wind_: Window) -> List[List[int]]:
         [wind_.row_off, wind_.col_off]
     ]
 
-
-def get_winNmask(rst: rasterio.io.DatasetReader, x: int, y: int, width: int, height: int, polys: List[Polygon]) -> Tuple[np.ndarray, np.ndarray]:
-    """This function crops a chip for a specified width and height and generates the mask of buildings with borders. It requires solaris framework
-
-    Parameters
-    ----------
-    rst : rasterio.io.DatasetReader
-        Raster which is the tif image to be cropped open using rasterio.open(tif url)
-    x : int 
-        X pixel coordinate of the top-left corner of the window.
-    y : int 
-        Y pixel coordinate of the top-left corner of the window.
-    width : int 
-        The width of the window to be chipped
-    height : int 
-        The height of the window to be chipped
-    polys : List[Polygon] 
-        the polygons of the whole raster image, in opencities ai the data was stored cleanly in a pystac and i was able
-        to insert the polygons of the buildings in geo-pandas dataframe , the polys parameter was called by geo-pandas-df-polys.geometry
-        so this is very specific and i didnt test other formats
-
-    Returns
-    -------
-    Tuple[np.ndarray, np.ndarray]
-        aoo : np.array of RGBA channels of the image chipped(cropped)
-        fbc_mask : an np array of shape [width,height,2] it contains the mask of buildings and borders
-    """
-
-    win = Window(x,y,width,height)
-    bbox = windows.bounds(win,rst.transform)
-    pol = generate_polygon(bbox)
-    pol_np = np.array(pol)
-    coords_transformed = warp.transform(rst.crs,{'init': 'epsg:4326'},pol_np[:,0],pol_np[:,1])
-    
-    ct=coords_transformed
-    l,b,r,t=min(ct[0]),min(ct[1]),max(ct[0]),max(ct[1])
-    coords_transformed = [[r,c] for r,c in zip(coords_transformed[0],coords_transformed[1])]
-    tfm1=from_bounds(l,b,r,t,height,width)
-    coords_transformed= Polygon(coords_transformed)
-    arr_win = rst.read(window=win)
-    
-    all_polys = [poly for poly in polys if poly.intersects(coords_transformed)]
-    all_polys_gdf = gp.GeoDataFrame(geometry=all_polys,crs='epsg:4326')
-    fbc_mask = sol.vector.mask.df_to_px_mask(df=all_polys_gdf,
-                                            channels=['footprint', 'boundary'],
-                                            affine_obj=tfm1, shape=(width,height),
-                                            boundary_width=4, boundary_type='inner',meters=False)
-    aoo=np.array(arr_win)
-    return aoo,fbc_mask
 
 
 def create_separation(labels: np.ndarray) -> np.ndarray:

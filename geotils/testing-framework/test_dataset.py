@@ -4,15 +4,18 @@ from numpy import array
 from torch import tensor
 import torch
 import sys
+from torchgeo.datasets import BoundingBox
 
 
 sys.path.append("../")
-from dataset.examples.georeferneced.Massachusetts_Buildings_Dataset import (
+
+from datasets.examples.georeferneced.Massachusetts_Buildings_Dataset import (
     MassachusettsBuildingsDataset,
 )
+from datasets.examples.nongeoreferenced.vlm import vlm
 
-from dataset.examples.nongeoreferenced.vlm import vlm
-from torchgeo.datasets import BoundingBox
+
+
 
 
 class TestGetMethod(unittest.TestCase):

@@ -47,17 +47,20 @@ scheduler_mapping = {
 
 
 def get_scheduler(name :str, optimizer :torch.optim.Optimizer, **kwargs) -> LRScheduler:
-    """
-    This function returns the scheduler given its name
+    r"""This function returns the scheduler given its name
 
-    @param name: name of the scheduler
-    @param params: Optimeizer to schedule
-    @param **kwargs:named parameters for the sheduler
+    Parameters
+    ----------
+    name: str
+        name of the scheduler
+    optimizer: torch.optim.Optimizer
+        Optimizer to schedule
+    args & kwargs: _
+        parameters for the scheduler
 
-    @type name:str
-    @type optimizer: torch.optim.Optimizer
-    
-    @return: torch.optim.lr_scheduler.LRScheduler
+    Returns
+    -------
+    torch.optim.lr_scheduler.LRScheduler
 
     """
     name = name.lower()
@@ -89,7 +92,7 @@ class AutoScheduler:
             @param data_loader: (optional) used to find the iters_per_epoch
             @param total_epochs: (optional)
             @param iters_per_epoch: (optional)
-            @param **kwargs:named parameters for the sheduler
+            @param kwargs:named parameters for the sheduler
 
             @type name:str
             @type optimizer: torch.optim.Optimizer

@@ -6,7 +6,7 @@ from torch.optim.optimizer import Optimizer
 class Apollo(Optimizer):
     r"""Implements Atom algorithm.
 
-        Arguments:
+        Attributes:
             params (iterable): iterable of parameters to optimize or dicts defining
                 parameter groups
             lr (float): learning rate
@@ -44,9 +44,10 @@ class Apollo(Optimizer):
     @torch.no_grad()
     def step(self, closure=None):
         """Performs a single optimization step.
-        Arguments:
-            closure (callable, optional): A closure that reevaluates the model
-                and returns the loss.
+        Parameters
+        ----------
+        closure (callable, optional): A closure that reevaluates the model
+            and returns the loss.
         """
         loss = None
         if closure is not None:
