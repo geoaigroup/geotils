@@ -5,7 +5,7 @@ import geopandas as gpd
 import cv2
 
 sys.path.append('../')
-from data_processing.pre_processing import LargeTiffLoader
+from data_processing.pre_processing.pre_processing import LargeTiffLoader
 from PIL import Image
 import shutil
 
