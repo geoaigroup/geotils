@@ -25,9 +25,6 @@ from rasterio.enums import ColorInterp
 from rasterio.plot import show
 from rasterio.windows import Window
 
-# Define some constants
-
-
 # Fix random seed for reproducibility
 np.random.seed(42)
 
