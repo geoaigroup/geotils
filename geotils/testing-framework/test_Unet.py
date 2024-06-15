@@ -1,5 +1,5 @@
 import unittest, torch, sys 
-sys.path.append('../')
+sys.path.append("../")
 from models.Unet_W_Mods import UnetWMDecoder, UnetWM, DecoderBlock1x
 
 
