@@ -4,7 +4,7 @@ Description missing
 
 ## Citation
 
-If you use this software in your work, please cite our [paper]():
+If you use this software in your work, please cite our [paper](https://not ready yet):
 ```bibtex
 @inproceedings{geotils_2024,
 }
