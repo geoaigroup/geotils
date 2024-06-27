@@ -4,7 +4,7 @@ Description missing
 
 ## Citation
 
-If you use this software in your work, please cite our [paper](https://dl.acm.org/doi/10.1145/3557915.3560953):
+If you use this software in your work, please cite our [paper]():
 ```bibtex
 @inproceedings{geotils_2024,
 }
