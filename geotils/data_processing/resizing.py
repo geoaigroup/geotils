@@ -62,7 +62,9 @@ def remove_boundary_positives_np(img: np.ndarray, pixels: int = 20) -> np.ndarra
     return bg
 
 
-def resize_pad(x: torch.Tensor, padsize: int = None, resize: int = None, pad_value: int = -1) -> torch.Tensor:
+def resize_pad(
+    x: torch.Tensor, padsize: int = None, resize: int = None, pad_value: int = -1
+) -> torch.Tensor:
     r"""Resize and/or pad input tensor.
 
     Parameters
@@ -83,33 +85,37 @@ def resize_pad(x: torch.Tensor, padsize: int = None, resize: int = None, pad_val
     """
     if padsize is None and resize is None:
         return x
-    
+
     input_shape = x.shape
     if len(input_shape) == 5:
-        B,T,C,H,W = input_shape
-        x = x.view(B*T,C,H,W)
-        
+        B, T, C, H, W = input_shape
+        x = x.view(B * T, C, H, W)
+
     if resize is not None:
-        x = interpolate(x,size=(resize,resize),mode='bilinear')
+        x = interpolate(x, size=(resize, resize), mode="bilinear")
 
     if padsize is not None:
+
         if resize is not None:
-            ppix = padsize - resize 
+            if padsize < resize:
+                raise Exception("padsize must be greater than resize ")
+            ppix = padsize - resize
         else:
             ppix = padsize - 256
         s = ppix // 2
         e = ppix - s
-        x = pad(x, (s,e,s,e), mode='constant', value=pad_value)
+        x = pad(x, (s, e, s, e), mode="constant", value=pad_value)
 
-    
     if len(input_shape) == 5:
-        H,W = x.shape[-2:]
-        x = x.view(B,T,C,H,W)
-    
+        H, W = x.shape[-2:]
+        x = x.view(B, T, C, H, W)
+
     return x
 
 
-def unpad_resize(x: torch.Tensor, padsize: int = None, resize: int = None) -> torch.Tensor:
+def unpad_resize(
+    x: torch.Tensor, padsize: int = None, resize: int = None
+) -> torch.Tensor:
     r"""Unpad and/or resize input tensor.
 
     Parameters
@@ -118,7 +124,7 @@ def unpad_resize(x: torch.Tensor, padsize: int = None, resize: int = None) -> to
         Input tensor with shape (B, C, H, W), where B is the batch size,
         C is the number of channels, H is the height, and W is the width.
     padsize : int
-        List specifying the pad size for each dimension [pad_top, pad_bottom, pad_left, pad_right].
+        Int specifying the pad size for each dimension.
     resize : int
         List specifying the target size for resizing [new_height, new_width].
 
@@ -131,17 +137,16 @@ def unpad_resize(x: torch.Tensor, padsize: int = None, resize: int = None) -> to
         return x
     if padsize is not None:
         if resize is not None:
-            ppix = padsize - resize 
+            ppix = padsize - resize
         else:
             ppix = padsize - 256
-        
+
         s = ppix // 2
         e = ppix - s
-        H,W = x.shape[-2:]
-        x = x[...,s:H-e,s:W-e]
-        
+        H, W = x.shape[-2:]
+        x = x[..., s : H - e, s : W - e]
+
     if resize is not None:
-        x = interpolate(x,size=(256,256),mode='bilinear')
+        x = interpolate(x, size=(256, 256), mode="bilinear")
 
     return x
-

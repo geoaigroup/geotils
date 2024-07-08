@@ -388,44 +388,6 @@ class Masker:
 
         return ins_mask
 
-    # def borders(self, ins_mask: np.ndarray) -> np.ndarray:
-    #     r"""Generate borders mask from instances mask.
-
-    #     Parameters
-    #     ----------
-    #     ins_mask : np.ndarray
-    #         Instances mask.
-
-    #     Returns
-    #     -------
-    #     np.ndarray
-    #         Borders mask.
-    #     """
-    #     ins_borders = np.zeros_like(ins_mask,dtype = np.int32)
-    #     ids = sorted(np.unique(ins_mask))[1:]
-    #     strc = self.get_strc()
-    #     for iid in ids:
-    #         instance = ins_mask == iid
-    #         try:
-    #             k=np.where(instance>0)
-    #             _t = k[0].min() - 3
-    #             _l = k[1].min() - 3
-    #             _b = k[0].max() + 3
-    #             _r = k[1].max() + 3
-
-    #             crop_instance = instance[_t:_b,_l:_r]
-    #             bld = binary_erosion(crop_instance, strc)
-    #             brdr = bld ^ crop_instance
-    #             brdr1 = np.zeros_like(instance,dtype=brdr.dtype)
-    #             brdr1[_t:_b,_l:_r] =brdr
-    #             ins_borders[brdr1 == True] = iid
-
-    #         except:
-    #             bld = binary_erosion(instance, strc)
-    #             brdr = bld ^ instance
-    #             ins_borders[brdr == True] = iid
-    #     return ins_borders
-
     def to_rgb(self, img: np.ndarray) -> np.ndarray:
         r"""Convert an image to RGB format.
 

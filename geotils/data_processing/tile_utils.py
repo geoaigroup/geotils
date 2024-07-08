@@ -261,27 +261,3 @@ def create_separation(labels: np.ndarray) -> np.ndarray:
             if len(uniq[uniq > 0]) > 1:
                 msk1[y0, x0] = True
     return msk1
-
-
-def make_instance_mask(all_polys: List[List[Tuple[float, float]]], size: int) -> Image:
-    """Encodes each building polygon with a value in the mask.
-
-    Parameters
-    ----------
-    all_polys : List[List[Tuple[float, float]]]
-        List of building polygons.
-    size : int
-        Width and height of the square mask.
-
-    Returns
-    -------
-    Image
-        Instance mask.
-    """
-
-    bg = np.zeros((size, size)).astype(np.uint8)
-    bg = Image.fromarray(bg).convert("L")
-    shift = 255 - len(all_polys)
-    for i, poly in enumerate(all_polys):
-        ImageDraw.Draw(bg).polygon(poly, outline=shift + i, fill=shift + i)
-    return bg
