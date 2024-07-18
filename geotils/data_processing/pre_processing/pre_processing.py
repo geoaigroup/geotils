@@ -31,13 +31,14 @@ class LargeTiffLoader:
         self.image_directory = image_directory
         self.image_suffix = image_suffix
 
-    def load_index(self, save_path, col_off, row_off, width, height):
+    def load_index(self, save_path, col_off, row_off, width, height, band_indices=None):
         """
         @param save_path = path of the directory to save cropped image
         @param col_off = indicates the starting column position from which the batch image should begin.
         @param row_off = specifies the starting row position from which the batch image should start.
         @param width = width of the batch image
         @param height = height of the batch image
+        @param band_indices =  the band indexes to be loaded
         """
         for file in os.listdir(self.image_directory):
             if file.endswith(self.image_suffix):
@@ -46,13 +47,7 @@ class LargeTiffLoader:
                     original_profile = src.profile
                     window = Window(col_off, row_off, width, height)
 
-                    source_colorinterp = dict(zip(src.colorinterp, src.indexes))
-
-                    rgb_indexes = [
-                        source_colorinterp[ci]
-                        for ci in (ColorInterp.red, ColorInterp.green, ColorInterp.blue)
-                    ]
-                    data = src.read(rgb_indexes, window=window)
+                    data = src.read(band_indices, window=window)
 
                     show(data, transform=src.window_transform(window))
 
