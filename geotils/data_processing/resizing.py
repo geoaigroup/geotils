@@ -126,7 +126,7 @@ def unpad_resize(
     padsize : int
         Int specifying the pad size for each dimension.
     resize : int
-        List specifying the target size for resizing [new_height, new_width].
+        int specifying the target size for resizing [new_height, new_width].
 
     Returns
     -------
@@ -135,18 +135,11 @@ def unpad_resize(
     """
     if padsize is None and resize is None:
         return x
-    if padsize is not None:
-        if resize is not None:
-            ppix = padsize - resize
-        else:
-            ppix = padsize - 256
 
-        s = ppix // 2
-        e = ppix - s
-        H, W = x.shape[-2:]
-        x = x[..., s : H - e, s : W - e]
+    if padsize is not None:
+        pad_top, pad_bottom, pad_left, pad_right = padsize
+        x = x[..., pad_top:-pad_bottom, pad_left:-pad_right]
 
     if resize is not None:
-        x = interpolate(x, size=(256, 256), mode="bilinear")
-
+        x = interpolate(x, size=resize, mode="bilinear", align_corners=False)
     return x
