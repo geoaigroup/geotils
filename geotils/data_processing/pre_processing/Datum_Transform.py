@@ -1,3 +1,4 @@
+# This tool is based on ArcGis code logic
 import geopandas as gpd
 import math
 from tqdm import tqdm
@@ -217,11 +218,11 @@ def SterioToWgs84(point):
     """
     p0=Point(39.15,34.2)
     print("Original Point:", point)
-    p1 = SterioToGeo(point , p0,6378249.2,293.46602,0.999534104,0,0) 
+    p1 = SterioToGeo(point , p0,6378249.2,293.4660212936265,0.999534104,0,0) 
     print("After SterioToGeo:", p1)
-    p2 = GeographicToGeocentric(p1 , 6378249.2,293.46602)
+    p2 = GeographicToGeocentric(p1 , 6378249.2,293.4660212936265)
     print("After GeographicToGeocentric:", p2)
-    p3 = DatumToGRS80(p2, 175.993534,125.164623,-244.865805,17.315446,12.135795,10.542653,-6.123214) 
+    p3 = DatumToGRS80(p2, 176.44534,124.582493,-244.842726,17.257592,12.12001,10.508606,-6.123272) 
     print("After DatumToGRS80:", p3)
     p4 = GeocentricToGeographic(p3 , 6378137.0,298.257223563)
     print("Final Output (GeocentricToGeographic):", p4)
@@ -285,14 +286,13 @@ def ProjectLayer_sterioToWgs84(Layer, output):
 
     """
     # WGS 84 to UTM Zone 36N
-    transformer = Transformer.from_crs('EPSG:4326', 'EPSG:32636', always_xy=True)
+    transformer = Transformer.from_crs('EPSG:4326', 'EPSG:32636', always_xy=True , accuracy= 1)
     name = GetFeatureName(output)
     path = GetFeaturePath(output)
     sr_utm = CRS.from_epsg(32636)  # UTM Zone 36N
     sr_wgs = CRS.from_epsg(4326)   # WGS 84
 
     gdf = gpd.read_file(Layer)
-    # gdf = gdf[:4] # for debugging 
     type = gdf.geometry.geom_type[0]
     new_gdf_utm = gpd.GeoDataFrame(columns=['geometry'], crs=sr_utm)
     new_gdf_wgs = gpd.GeoDataFrame(columns=['geometry'], crs=sr_wgs)
@@ -333,7 +333,7 @@ def ProjectLayer_sterioToWgs84(Layer, output):
 
     
     
-input_shapefile = "TyreDatasetShapefileSimplified_Stereo.shp"
-output_path = "output"
+input_shapefile = "path_to_stereo_shapefile"
+output_path = "name_of_the_output_wgs_shapefile"
 
 ProjectLayer_sterioToWgs84(input_shapefile, output_path)
