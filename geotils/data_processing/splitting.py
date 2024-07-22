@@ -44,7 +44,7 @@ class Splitting:
 
         folds = [int(fold) for fold in self.df.groupby("fold").first().index.values]
         if self.verbose:
-            if label_key is None:
+            if self.label_keys is None:
                 raise Exception("label_keys is required if verbose is turned on")
             for fold in folds:
                 for label_key in self.label_keys:
