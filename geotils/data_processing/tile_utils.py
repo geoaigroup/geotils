@@ -100,7 +100,7 @@ def get_covering_tiles(gdf, zoom_level):
 
 
 def poly2gdf(poly, crs):
-    return gpd.GeoDataFrame({"geometry": [poly]}, crs=our_crs)
+    return gpd.GeoDataFrame({"geometry": [poly]}, crs=crs)
 
 
 def encode_tile_id(tile_xyz):

@@ -417,6 +417,6 @@ class Masker:
         np.ndarray
             Grayscale mask array with values 0 or 255.
         """
-        if np.size > 2:
+        if len(mask.shape) > 2:
             raise Exception("input mask must be of shape (H,W)")
         return (mask > 0).astype(np.uint8) * 255
