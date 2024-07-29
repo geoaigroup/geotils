@@ -173,13 +173,12 @@ class UnetWMDecoder(nn.Module):
             self.center = nn.Identity()
 
         # combine decoder keyword arguments
-        print("Skipping ", len(skip_channels))
+
         kwargs = dict(use_batchnorm=use_batchnorm, attention_type=attention_type)
         blocks = [
             DecoderBlock(in_ch, skip_ch, out_ch, **kwargs)
             for in_ch, skip_ch, out_ch in zip(in_channels, skip_channels, out_channels)
         ]
-        print("LENGTH IS ", len(blocks))
         if(n_blocks == 5 and self.os==16):
             blocks[0]=DecoderBlock1x(in_channels[0],skip_channels[0],out_channels[0])
         self.blocks = nn.ModuleList(blocks)

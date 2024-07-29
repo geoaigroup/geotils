@@ -22,6 +22,6 @@ jobs:
           pip install numpy geopandas shapely scikit-learn tabulate timm torchvision rasterio scikit-image matplotlib affine opencv-python simplification imantics torchgeo icecream segmentation_models_pytorch pystac
 
       - name: Run unit tests
-        working-directory: geotils/testing-framework
+        working-directory: geotils/testing-framework/unittests
         run: |
           python -m unittest discover -s . -p 'test*.py'
