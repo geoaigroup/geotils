@@ -153,176 +153,81 @@ class MatchingAlgorithm():
         return tp_iou_list, avg_tp_iou
 
 
-class CalScores:
-    """
-    Initialize the CalScores class.
-    Designed for evaluating segmentation results, particularly for building detection tasks. It provides 
-    methods to calculate both micro-level and macro-level matching metrics between predicted and 
-    ground truth building masks. Additionally, it facilitates the storage and visualization of results, 
-    such as saving score files and generating annotated images.
+class SemanticScorer:
+    def __init__(self,threshold=0):
 
-    Args:
-        output_dir (str): Directory to save output files.
-        score_dir (str): Directory to save score files.
-    """
-    def __init__(self,output_dir,score_dir):
-        self.output_dir=output_dir
-        self.score_dir=score_dir
+        self.tp_list = []
+        self.fp_list = []
+        self.fn_list = []
+        self.n_samples = 0
+    
+    def update(self,gt,pr):
 
-    def micro_match_iou(self,pred_mask, name, gt, image,input_point,input_label,tile_boxes, save=None, visualize=None):
-        """
-        Calculate micro-level matching metrics and save results.
-        Responsible for calculating micro-level matching metrics between predicted and ground truth 
-        building masks for a specific image tile. It takes into account various metrics such as IoU 
-        (Intersection over Union), F1 score, precision, and recall. The results are stored in a JSON file, 
-        and an annotated image is generated for visual inspection.
-
-        Args:
-            pred_mask (torch.Tensor): Predicted mask.
-            name (str): Name identifier for the image.
-            gt (dict): Ground truth information.
-            image (numpy.ndarray): Input image.
-            input_point: Input points.
-            input_label: Input labels.
-            tile_boxes: Boxes related to tiles.
-            save: Flag set for saving.
-            visualize: Flag set for visualization.
-        """
-        pred_tile = []
-        gt_tile = []
-        msk = pred_mask.int()
-        msk = msk.cpu().numpy()
-        scores_b = []
-        score = {}
-        mask_tile = np.zeros(image.shape[:2])
-
-        for i in range(msk.shape[0]):
-            batch = msk[i]
-            for b in range(batch.shape[0]):
-                mask_tile = mask_tile + batch[b]
-                pred_tile.append(batch[b])
-
-
-        gt_tile=convert_polygon_to_mask_batch(gt['geometry'])
-
-        matcher = MatchingAlgorithm(gt_tile, pred_tile)
-        iou_list, f1_scores, tp_pred_indices, tp_gt_indices, fp_indices, fn_indices, mscores, precision,recall = matcher.matching()
-        tp_iou_list, avg_tp_iou = matcher.tp_iou(tp_pred_indices, tp_gt_indices)
-
-        score['iou_list'] = iou_list
-        score['f1_scores'] = f1_scores
-        score['tp_iou_list'] = tp_iou_list
-        score['fp_indices'] = fp_indices
-        score['fn_indices'] = fn_indices
-        score['Mean_iou'] = np.mean(iou_list, dtype=float)
-        score['Mean_f1'] = np.mean(f1_scores, dtype=float)
-        score['avg_tp_iou'] = float(avg_tp_iou) if avg_tp_iou is not None else 0.0
-        score['precision'] = precision
-        score['recall'] = recall
-
-        for s in mscores:
-            scores_b.append(s)
-        scores_b.append(score)
-
-        with open(self.score_dir + f'/{name}_score.json', 'w') as f1:
-            json.dump(scores_b, f1)
-            
-        if save is not None:
-            save_shp(pred_mask,name,self.output_dir,image.shape[:2])
+        tp_mask = gt * pr
+        fp_mask = pr - tp_mask
+        fn_mask = gt - tp_mask
         
-        plt.figure(figsize=(10, 10))
-        plt.imshow(image)
-        show_mask(mask_tile, plt.gca(), random_color=False)
-        if input_point is not None:
-            show_points(input_point.cpu(),  input_label.cpu(), plt.gca())
-        for box in tile_boxes:
-            show_box(box,plt.gca())
+        self.tp_list.append(tp_mask.sum())
+        self.fp_list.append(fp_mask.sum())
+        self.fn_list.append(fn_mask.sum())
+        self.n_samples += 1
+        ###return np.concatenate([tp_mask[...,None],fp_mask[...,None],fn_mask[...,None]],axis=-1)###
+        #pass
+    
+    def calculate_macro_scores(self):
+        score_dict = {}
         
-        if visualize is not None:
-            for box in tile_boxes:
-                x = []
-                y = []
-                for i in range(len(box)):
-                    if i % 2 == 0:
-                        x.append(box[i])
-                    else:
-                        y.append(box[i])
-                plt.plot(x, y)
-        plt.show()
+    
+        tps = np.asarray(self.tp_list)
+        fps = np.asarray(self.fp_list)
+        fns = np.asarray(self.fn_list)
 
-        if visualize is not None:
-            gtmask=np.zeros((384,384))
-            for g in gt_tile:
-                gtmask=g+gtmask
-            plt.imshow(gtmask)
-            plt.show()
+        zero_preds = ((tps == 0) * (fps == 0) * (fns == 0)).astype(tps.dtype)
+        precs = tps / (tps + fps).clip(min=1)
+        recs = tps / (tps + fns).clip(min=1)
+        ious = tps / (tps + fns + fps).clip(min=1)
+        f1s = (2 * precs * recs) / (precs + recs).clip(min=1)
+
+        ####keep zero preds
+        precs[zero_preds > 0] = 1.0
+        recs[zero_preds > 0] = 1.0
+        ious[zero_preds > 0] = 1.0
+        f1s[zero_preds > 0] = 1.0
+
+        prec = precs.mean()
+        rec = recs.mean()
+        iou = ious.mean()
+        f1 = f1s.mean()
+        score_dict['with_zero_preds'] = {'Precision' : prec,'Recall':rec,'IoU':iou,'F1':f1}
         
+        ####remove zero preds
+        precs[zero_preds > 0] = np.nan
+        recs[zero_preds > 0] = np.nan
+        ious[zero_preds > 0] = np.nan
+        f1s[zero_preds > 0] = np.nan
 
-    def macro_score(self):
-        """
-        Calculate macro-level matching metrics and save results.
-        Aggregates and analyzes the macro-level matching metrics for all image tiles. It reads previously 
-        generated score files, calculates average scores, and generates a CSV file summarizing the overall performance. 
-        This method provides insights into the global performance of the segmentation model across multiple tiles.
-        """
-        score_list = []
-        all_iou_scores = []
-        all_f1_scores = []
-        all_precision=[]
-        all_recall=[]
-        for i in glob.glob(os.path.join(self.score_dir, "*.json")):
-            name = i.split("/")[-1]
-            name = name.split("_score")[0]
+        prec = np.nanmean(precs)
+        rec = np.nanmean(recs)
+        iou = np.nanmean(ious)
+        f1 = np.nanmean(f1s)
+        score_dict['without_zero_preds'] = {'Precision' : prec,'Recall':rec,'IoU':iou,'F1':f1}
+        return score_dict
+    
+    def calculate_micro_scores(self):
+        score_dict = {}
+        
+    
+        tps = np.asarray(self.tp_list)
+        fps = np.asarray(self.fp_list)
+        fns = np.asarray(self.fn_list)
 
-            f = open(i)
-            file_data = json.load(f)
-            ds = {}
-            iou = file_data[len(file_data) - 1]["Mean_iou"]
-            f1 = file_data[len(file_data) - 1]["Mean_f1"]
-            avg_tp_iou = file_data[len(file_data) - 1]["avg_tp_iou"]
-            precision = file_data[len(file_data) - 1]["precision"]
-            recall = file_data[len(file_data) - 1]["recall"]
-
-            all_precision.append(precision)
-            all_recall.append(recall)
-
-            all_iou_scores.append(file_data[len(file_data) - 1]["iou_list"])
-            all_f1_scores.append(file_data[len(file_data) - 1]["f1_scores"])
-
-
-            ds["name"] = name
-            ds["iou"] = iou
-            ds["f1"] = f1
-            ds["avg_tp_iou"] = avg_tp_iou
-            ds["precision"] = precision
-            ds["recall"] = recall
-            score_list.append(ds)
-
-        df = pd.DataFrame(score_list)
-        df.to_csv(self.score_dir + "/scores.csv", index=False)
-
-        all_i = []
-        all_f = []
-        all_tpi = []
-        all_tpf = []
-
-        for i1, f11 in zip(all_iou_scores, all_f1_scores):
-            for i2, f12 in zip(i1, f11):
-                all_i.append(i2)
-                all_f.append(f12)
-                if i2 > 0 and f12 > 0:
-                    all_tpi.append(i2)
-                    all_tpf.append(f12)
-
-        total_iou = np.nanmean(np.array(all_i))
-        total_f1 = np.nanmean(np.array(all_f))
-        total_tpiou = np.mean(np.array(all_tpi))
-        total_tpf1 = np.mean(np.array(all_tpf))
-        total_precision = np.mean(np.array(all_precision))
-        total_recall = np.mean(np.array(all_recall))
-
-        print("Mean iou score of all buildings in all tiles:", total_iou)
-        print("Mean F1 score of all buildings in all tiles:", total_f1)
-        print("Mean tp iou score of all buildings in all tiles:", total_tpiou)
-        print("Mean tp f1 score of all buildings in all tiles:", total_tpf1)
- 
+        zero_preds = ((tps == 0) * (fps == 0) * (fns == 0)).astype(tps.dtype)
+        tp = tps.sum()
+        fp = fps.sum()
+        fn = fns.sum()
+        prec = tp / (tp + fp).clip(min=1)
+        rec = tp / (tp + fn).clip(min=1)
+        iou = tp / (tp + fn + fp).clip(min=1)
+        f1 = (2 * prec * rec) / (prec + rec).clip(min=1)
+        score_dict = {'Precision' : prec,'Recall':rec,'IoU':iou,'F1':f1}
+        return score_dict

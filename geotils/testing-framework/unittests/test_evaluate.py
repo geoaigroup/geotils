@@ -12,7 +12,7 @@ import torch
 import sys 
 import shutil
 sys.path.append('../../')
-from evaluation.evaluate import iou_numpy, MatchingAlgorithm, CalScores
+from evaluation.evaluate import iou_numpy, MatchingAlgorithm
 
 class TestIoUNumpy(unittest.TestCase):
     def test_iou_numpy_perfect_match(self):
@@ -60,47 +60,3 @@ class TestMatchingAlgorithm(unittest.TestCase):
         tp_iou_list, avg_tp_iou = matcher.tp_iou(tp_pred_indices, tp_gt_indices)
         self.assertEqual(len(tp_iou_list), 2, "Incorrect number of true positive IoU scores")
         self.assertAlmostEqual(avg_tp_iou, 0.875, places=2, msg="Incorrect average true positive IoU value")
-
-class TestCalScores(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.output_dir = 'test_output'
-        cls.score_dir = 'test_scores'
-        os.makedirs(cls.output_dir, exist_ok=True)
-        os.makedirs(cls.score_dir, exist_ok=True)
-
-    @classmethod
-    def tearDownClass(cls):
-        shutil.rmtree(cls.output_dir)
-        shutil.rmtree(cls.score_dir)
-
-    def test_initialization(self):
-        scores = CalScores(self.output_dir, self.score_dir)
-        self.assertEqual(scores.output_dir, self.output_dir)
-        self.assertEqual(scores.score_dir, self.score_dir)
-        
-    # @patch("builtins.open")
-    # def test_micro_match_iou(self, mock_open):
-    #     # Test inputs
-    #     output_dir = "output"
-    #     score_dir = "scores"
-    #     pred_mask = torch.zeros(2, 1, 10, 10)
-    #     name = "test_image"
-    #     gt = {"geometry": []}
-    #     image = np.zeros((10, 10, 3))
-    #     input_point = None
-    #     input_label = None
-    #     tile_boxes = [(1, 1, 5, 5)]
-
-    #     # Initialize CalScores object
-    #     cal_scores = CalScores(output_dir, score_dir)
-    #     cal_scores.micro_match_iou(pred_mask, name, gt, image, input_point, input_label, tile_boxes, save=None, visualize=True)
-
-
-    def test_macro_score(self):
-        output_dir = "output"
-        score_dir = "scores"
-        cal_scores = CalScores(output_dir, score_dir)
-
-        with patch("os.path.join"), patch("os.listdir"), patch("glob.glob"), patch("pandas.DataFrame.to_csv"), patch("builtins.open", create=True) as mocked_open, patch("json.dump"):
-            cal_scores.macro_score()
