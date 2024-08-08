@@ -1,5 +1,6 @@
 import numpy as np
 import random
+from skimage.draw import polygon
 
 
 class Visualization(object):
@@ -121,3 +122,36 @@ class Visualization(object):
         overlay = (overlay * 255.0).astype(np.uint8)
         viz = Visualization.overlay_rgb_mask(img, overlay, instances > 0, alpha=alpha)
         return viz
+
+
+def draw_polygon(geom,mask,value=255,zero_value=0):
+    coords = np.asarray(list(geom.exterior.coords))
+    rr,cc = polygon(coords[:,1],coords[:,0],shape=mask.shape[:2])
+    mask[rr,cc] = value
+    for lr in geom.interiors:
+        interior_coords = np.asarray(list(lr.coords))
+        rr,cc = polygon(interior_coords[:,1],interior_coords[:,0],shape=mask.shape[:2])
+        mask[rr,cc] = zero_value
+    return mask
+
+def draw_shape(geom,mask,value=255,zero_value=0):
+    if geom.geom_type == 'Polygon':
+        polys = [geom]
+    elif geom.geom_type == 'MultiPolygon':
+        polys = list(geom.geoms)
+    else:
+        raise NotImplementedError
+
+    for poly in polys:
+        mask = draw_polygon(poly,mask,value,zero_value)
+    
+    return mask
+
+def gdf_to_mask(gdf,mask_shape,binary=False):
+    H,W = mask_shape
+    mask = np.zeros((H,W),dtype=np.uint8 if binary else np.uint16)
+    for i,row in gdf.iterrows():
+        geom = row['geometry']
+        index = 255 if binary else i+1 
+        draw_shape(geom,mask,index,0)
+    return mask
