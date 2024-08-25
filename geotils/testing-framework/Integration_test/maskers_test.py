@@ -1,3 +1,4 @@
+import sys
 import geotils.data_processing.masker as ms
 from rasterio import windows
 import geopandas as gpd
@@ -9,17 +10,18 @@ from matplotlib.patches import Circle, Rectangle
 import unittest
 
 masker = ms.Masker()
+sys.path.append("../")
 
 
 class TestMasker(unittest.TestCase):
     global raster
     raster = masker.load_raster_file(
-        r"C:\Users\abbas\OneDrive\Desktop\CNRS\geotils_testing\crop\vlm\Images_LR\0.tif"
+        r"assets\0.tif"
     )
 
     def test_load_labels(self):
         labels = masker.load_labels(
-            r"C:\Users\abbas\OneDrive\Desktop\CNRS\geotils_testing\crop\vlm\all_answers.json"
+            r"assets\all_answers.json"
         )
         self.assertEqual(
             labels["answers"][0],
@@ -48,7 +50,7 @@ class TestMasker(unittest.TestCase):
 
     def test_load_raster_file(self):
         raster = masker.load_raster_file(
-            r"C:\Users\abbas\OneDrive\Desktop\CNRS\geotils_testing\crop\vlm\Images_LR\0.tif"
+            r"assets\0.tif"
         )
         print()
 
@@ -69,7 +71,7 @@ class TestMasker(unittest.TestCase):
     def test_project_poly(self):
         poly = [[6.0, 0.0], [6.0, 20.0], [8.0, 2.0], [8.0, 0.0], [7.0, -1.0]]
 
-        frs = rs.open(r"C:\Users\abbas\OneDrive\Desktop\CNRS\file.tif")
+        frs = rs.open(r"assets\file2.tif")
         size = (255.5, 255.5)
         self.assertEqual(
             masker.project_poly(poly, frs, size),
@@ -123,7 +125,7 @@ class TestMasker(unittest.TestCase):
 
         self.assertEqual(
             np.genfromtxt(
-                r"geotils\geotils\testing-framework\assets\table.csv",
+                r"\assets\table.csv",
                 delimiter=",",
             ).all(),
             test.all(),

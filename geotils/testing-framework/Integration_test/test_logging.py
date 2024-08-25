@@ -1,11 +1,12 @@
+import sys
 import unittest
 import geotils.logging.configuration as conf
 
-
+sys.path.append("../")
 class TestLogging(unittest.TestCase):
     def _init_(self):
         self.loader = conf.ConfigManager(
-            r"C:\Users\abbas\OneDrive\Desktop\CNRS\geotils_testing"
+            r"\assets\configs.yaml"
         )
         print()
 
