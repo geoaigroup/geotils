@@ -1,3 +1,5 @@
+[![PyPI Downloads](https://static.pepy.tech/badge/geotils)](https://pepy.tech/projects/geotils)
+
 # geotils library
 
 Description missing    
