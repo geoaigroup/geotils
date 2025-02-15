@@ -265,6 +265,35 @@ def DatumToGRS80(point, tx, ty, tz, rx, ry, rz, f):
     return p
 
 
+def clean_geodataframe(gdf): 
+    """
+    Cleans a GeoDataFrame by:
+    - Removing rows with missing geometries.
+    - Fixing invalid geometries using buffering.
+    - Filtering out invalid geometries after the fix.
+    - Resetting the index.
+    
+    Args:
+        gdf (GeoDataFrame): Input GeoDataFrame.
+
+    Returns:
+        GeoDataFrame: Cleaned GeoDataFrame.
+    """
+    # Remove rows where the geometry column is NaN
+    gdf = gdf[gdf['geometry'].notna()] 
+    
+    # Fix invalid geometries by applying a zero-width buffer
+    gdf['geometry'] = gdf.buffer(0) 
+    
+    # Keep only rows with valid geometries
+    gdf = gdf[gdf.is_valid] 
+    
+    # Reset the index to be consecutive and drop the old index
+    gdf.reset_index(inplace=True, drop=True) 
+    
+    return gdf
+
+
 
 def ProjectLayer_sterioToWgs84(Layer, output):
     """
@@ -283,22 +312,23 @@ def ProjectLayer_sterioToWgs84(Layer, output):
     The function handles both Polygon and MultiPolygon geometries, converting them
     through a series of transformations and saving the results in both UTM and
     WGS 84 formats.
-
     """
     # WGS 84 to UTM Zone 36N
-    transformer = Transformer.from_crs('EPSG:4326', 'EPSG:32636', always_xy=True , accuracy= 1)
+    transformer = Transformer.from_crs('EPSG:4326', 'EPSG:32636', always_xy=True, accuracy=1)
     name = GetFeatureName(output)
     path = GetFeaturePath(output)
     sr_utm = CRS.from_epsg(32636)  # UTM Zone 36N
     sr_wgs = CRS.from_epsg(4326)   # WGS 84
 
+    # Load and clean the input GeoDataFrame
     gdf = gpd.read_file(Layer)
+    gdf = clean_geodataframe(gdf)  # Clean input GeoDataFrame
     type = gdf.geometry.geom_type[0]
     new_gdf_utm = gpd.GeoDataFrame(columns=['geometry'], crs=sr_utm)
     new_gdf_wgs = gpd.GeoDataFrame(columns=['geometry'], crs=sr_wgs)
 
     if type == 'Polygon' or type == 'MultiPolygon':
-        for index, row in tqdm(gdf.iterrows()):
+        for index, row in tqdm(gdf.iterrows(), total=gdf.shape[0]):
             s = row.geometry
             newfeature_utm = []
             newfeature_wgs = []
@@ -323,9 +353,12 @@ def ProjectLayer_sterioToWgs84(Layer, output):
             pol_wgs = MultiPolygon(newfeature_wgs) if len(newfeature_wgs) > 1 else newfeature_wgs[0]
             new_gdf_utm.loc[len(new_gdf_utm)] = [pol_utm]
             new_gdf_wgs.loc[len(new_gdf_wgs)] = [pol_wgs]
-    new_gdf_utm.crs = "EPSG:32636"
-    new_gdf_wgs.crs = "EPSG:4326"
 
+    # Clean the output GeoDataFrames
+    new_gdf_utm = clean_geodataframe(new_gdf_utm)
+    new_gdf_wgs = clean_geodataframe(new_gdf_wgs)
+
+    # Save the cleaned GeoDataFrames
     new_gdf_utm.to_file(path + name + '_utm.shp', driver='ESRI Shapefile')
     new_gdf_wgs.to_file(path + name + '_wgs.shp', driver='ESRI Shapefile')
 
@@ -333,7 +366,9 @@ def ProjectLayer_sterioToWgs84(Layer, output):
 
     
     
-input_shapefile = "path_to_stereo_shapefile"
-output_path = "name_of_the_output_wgs_shapefile"
+input_shapefile = ""
+output_path = ""
 
 ProjectLayer_sterioToWgs84(input_shapefile, output_path)
+
+
